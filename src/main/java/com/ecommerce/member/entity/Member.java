@@ -32,4 +32,8 @@ public class Member {
     private LocalDateTime regDt;
     @NotNull
     private LocalDateTime modDt;
+
+    public boolean checkPassword(String password){
+        return this.password.equals(password);
+    }
 }
