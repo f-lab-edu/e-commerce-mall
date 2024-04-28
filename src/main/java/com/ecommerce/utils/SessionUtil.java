@@ -13,4 +13,9 @@ public class SessionUtil {
     public static void setMemberId(HttpSession session, Long id) {
         session.setAttribute(LOGIN_MEMBERS_ID, id);
     }
+
+    // 로그아웃한 회원 ID 세션에서 제거
+    public static void logoutMemberId(HttpSession session) {
+        session.removeAttribute(LOGIN_MEMBERS_ID);
+    }
 }
