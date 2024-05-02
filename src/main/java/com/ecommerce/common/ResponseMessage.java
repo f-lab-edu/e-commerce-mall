@@ -1,17 +1,14 @@
 package com.ecommerce.common;
 
+import lombok.Builder;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
 
 @Data
+@Builder
 public class ResponseMessage {
 
-    private StatusEnum status;
-    private String message;
-    private Object data;
-
-    public ResponseMessage() {
-        this.status = StatusEnum.BAD_REQUEST;
-        this.message = null;
-        this.data = null;
-    }
+  private HttpStatus status;
+  private String message;
+  private Object data;
 }

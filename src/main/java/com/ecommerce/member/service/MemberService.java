@@ -16,19 +16,23 @@ import java.util.Optional;
 @Transactional
 public class MemberService {
 
-    private final MemberRepository memberRepository;
+  private final MemberRepository memberRepository;
 
-    public Long save(SignupRequest request) {
-        Optional<Member> checkEmail = memberRepository.findByEmail(request.getEmail());
-        if(checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
-        }
-        return memberRepository.save(Member.builder()
+  public Long save(SignupRequest request) {
+    Optional<Member> checkEmail = memberRepository.findByEmail(request.getEmail());
+    if (checkEmail.isPresent()) {
+      throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+    }
+    return memberRepository
+        .save(
+            Member.builder()
                 .email(request.getEmail())
                 .password(SHA256Util.encrypt(request.getPassword()))
                 .name(request.getName())
                 .phone(request.getPhone())
                 .regDt(LocalDateTime.now())
-                .modDt(LocalDateTime.now()).build()).getId();
-    }
+                .modDt(LocalDateTime.now())
+                .build())
+        .getId();
+  }
 }
