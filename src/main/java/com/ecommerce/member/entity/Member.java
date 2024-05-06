@@ -1,5 +1,6 @@
 package com.ecommerce.member.entity;
 
+import com.ecommerce.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -7,14 +8,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Member {
+public class Member extends BaseTimeEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -27,8 +26,6 @@ public class Member {
   @NotNull private String name;
   @NotNull private String phone;
   private String keywords;
-  @NotNull private LocalDateTime regDt;
-  @NotNull private LocalDateTime modDt;
 
   public boolean checkPassword(String password) {
     return this.password.equals(password);

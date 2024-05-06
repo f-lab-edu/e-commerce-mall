@@ -4,7 +4,6 @@ import com.ecommerce.member.dto.SignupRequest;
 import com.ecommerce.member.entity.Member;
 import com.ecommerce.member.repository.MemberRepository;
 import com.ecommerce.utils.SHA256Util;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +23,6 @@ public class MemberService {
                 .password(SHA256Util.encrypt(request.getPassword()))
                 .name(request.getName())
                 .phone(request.getPhone())
-                .regDt(LocalDateTime.now())
-                .modDt(LocalDateTime.now())
                 .build())
         .getId();
   }
