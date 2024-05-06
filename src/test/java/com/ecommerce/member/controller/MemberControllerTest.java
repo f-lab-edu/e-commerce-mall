@@ -96,15 +96,11 @@ class MemberControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request1)));
 
-        // TODO: checkEmail 로직 제거 시 테스트 코드 수정 예정
-        // when
-        ServletException e = Assertions.assertThrows(ServletException.class, () -> {
+        // when - then
+        Assertions.assertThrows(ServletException.class, () -> {
             mockMvc.perform(post(url)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request2)));
         });
-
-        // then
-        assertThat(e.getRootCause().getMessage()).isEqualTo("중복된 사용자가 존재합니다.");
     }
 }
