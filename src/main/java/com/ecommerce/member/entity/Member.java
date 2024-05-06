@@ -15,21 +15,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Member {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    @NotNull
-    private String email;
-    @NotNull
-    private String password;
-    @NotNull
-    private String name;
-    @NotNull
-    private String phone;
-    private String keywords;
-    @NotNull
-    private LocalDateTime regDt;
-    @NotNull
-    private LocalDateTime modDt;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(unique = true)
+  @NotNull
+  private String email;
+
+  @NotNull private String password;
+  @NotNull private String name;
+  @NotNull private String phone;
+  private String keywords;
+  @NotNull private LocalDateTime regDt;
+  @NotNull private LocalDateTime modDt;
+
+  public boolean checkPassword(String password) {
+    return this.password.equals(password);
+  }
 }
