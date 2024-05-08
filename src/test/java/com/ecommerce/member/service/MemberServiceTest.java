@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 
@@ -74,11 +75,7 @@ class MemberServiceTest {
 
         memberService.save(request1);
 
-        // TODO: checkEmail 로직 제거 시 테스트 코드 수정 예정
-        // when
-        IllegalArgumentException e = Assertions.assertThrows(IllegalArgumentException.class, () -> memberService.save(request2));
-
-        // then
-        assertThat(e.getMessage()).isEqualTo("중복된 사용자가 존재합니다.");
+        // when - then
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> memberService.save(request2));
     }
 }
