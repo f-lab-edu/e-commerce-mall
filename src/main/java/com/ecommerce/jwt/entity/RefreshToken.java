@@ -29,9 +29,13 @@ public class RefreshToken {
     private String expiration;
 
     public RefreshToken update(String refreshToken, Long expiredMs) {
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
         this.refreshToken = refreshToken;
-        this.expiration = date.toString();
+        setExpiration(expiredMs);
         return this;
+    }
+
+    public void setExpiration(Long expiredMs) {
+        Date date = new Date(System.currentTimeMillis() + expiredMs);
+        this.expiration = date.toString();
     }
 }
