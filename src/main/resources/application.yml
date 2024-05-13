@@ -1,7 +1,9 @@
 spring:
   profiles:
     active: dev
-    include: db
+    include:
+    - db
+    - jwt
   jpa:
     hibernate:
       ddl-auto: create
