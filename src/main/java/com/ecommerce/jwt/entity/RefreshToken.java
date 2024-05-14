@@ -1,5 +1,6 @@
 package com.ecommerce.jwt.entity;
 
+import com.ecommerce.jwt.JwtUtil;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,14 +31,13 @@ public class RefreshToken {
     @NotNull
     private String expiration;
 
-    public RefreshToken update(String refreshToken, Long expiredMs) {
+    public void update(String refreshToken) {
         this.refreshToken = refreshToken;
-        setExpiration(expiredMs);
-        return this;
+        setExpiration();
     }
 
-    public void setExpiration(Long expiredMs) {
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
+    public void setExpiration() {
+        Date date = new Date(System.currentTimeMillis() + JwtUtil.REFRESH_TOKEN_EXPIREDMS);
         this.expiration = date.toString();
     }
 }

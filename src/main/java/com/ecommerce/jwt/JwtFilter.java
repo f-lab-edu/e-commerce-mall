@@ -20,17 +20,15 @@ import java.io.PrintWriter;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private static final String ACCESS_TOKEN_KEY = "Access";
-    private static final String ACCESS_TOKEN_CATEGORY = "access";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         logger.debug("JwtFilter start.");
 
-        String accessToken = request.getHeader(ACCESS_TOKEN_KEY);
+        String accessToken = request.getHeader("Access");
 
-        if(accessToken == null) {
+        if (accessToken == null) {
             logger.debug("token null");
             filterChain.doFilter(request, response);
             return;
@@ -51,9 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         // category check
-        String category = jwtUtil.getCategory(accessToken);
-
-        if(!category.equals(ACCESS_TOKEN_CATEGORY)) {
+        if (!jwtUtil.isAccess(accessToken)) {
             logger.debug("invalid access token");
             PrintWriter writer = response.getWriter();
             writer.println("invalid access token");

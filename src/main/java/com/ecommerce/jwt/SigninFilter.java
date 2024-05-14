@@ -28,10 +28,6 @@ public class SigninFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
-    private static final Long ACCESS_TOKEN_EXPIREDMS = 600000L;
-    private static final Long REFRESH_TOKEN_EXPIREDMS = 86400000L;
-    private static final String ACCESS_TOKEN_KEY = "Access";
-    private static final String REFRESH_TOKEN_KEY = "Refresh";
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -59,18 +55,18 @@ public class SigninFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String email = authResult.getName();
 
-        String accessToken = jwtUtil.createJWT("access", email, ACCESS_TOKEN_EXPIREDMS);
-        String refreshToken = jwtUtil.createJWT("refresh", email, REFRESH_TOKEN_EXPIREDMS);
+        String accessToken = jwtUtil.createAccessToken(email);
+        String refreshToken = jwtUtil.createRefreshToken(email);
 
         RefreshToken refreshTokenEntity = RefreshToken.builder()
                 .email(email)
                 .refreshToken(refreshToken)
                 .build();
-        refreshTokenEntity.setExpiration(REFRESH_TOKEN_EXPIREDMS);
+        refreshTokenEntity.setExpiration();
         refreshTokenRepository.save(refreshTokenEntity);
 
-        response.setHeader(ACCESS_TOKEN_KEY, accessToken);
-        response.addCookie(CookieUtil.createCookie(REFRESH_TOKEN_KEY, refreshToken));
+        response.setHeader("Access", accessToken);
+        response.addCookie(CookieUtil.createRefreshCookie(refreshToken));
         response.setStatus(HttpStatus.OK.value());
     }
 

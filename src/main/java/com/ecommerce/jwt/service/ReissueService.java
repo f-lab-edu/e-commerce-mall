@@ -28,8 +28,7 @@ public class ReissueService {
         }
 
         // category check
-        String category = jwtUtil.getCategory(refreshToken);
-        if(!category.equals("refresh")) {
+        if (!jwtUtil.isRefresh(refreshToken)) {
             return ReissueResponse.builder()
                     .message("invalid refresh token")
                     .build();
@@ -39,17 +38,17 @@ public class ReissueService {
 
         // refresh in DB check
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByEmailAndRefreshToken(email, refreshToken);
-        if(refreshTokenEntity == null) {
+        if (refreshTokenEntity == null) {
             return ReissueResponse.builder()
                     .message("invalid refresh token")
                     .build();
         }
 
         // make new JWT
-        String newAccess = jwtUtil.createJWT("access", email, 600000L);
-        String newRefresh = jwtUtil.createJWT("refresh", email, 86400000L);
+        String newAccess = jwtUtil.createAccessToken(email);
+        String newRefresh = jwtUtil.createRefreshToken(email);
 
-        refreshTokenEntity.update(newRefresh, 86400000L);
+        refreshTokenEntity.update(newRefresh);
 
         return ReissueResponse.builder()
                 .accessToken(newAccess)

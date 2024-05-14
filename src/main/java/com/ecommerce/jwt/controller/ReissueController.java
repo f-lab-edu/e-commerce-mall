@@ -21,7 +21,7 @@ public class ReissueController {
 
     @PostMapping("")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = CookieUtil.getCookieValue(request, "Refresh");
+        String refreshToken = CookieUtil.getRefreshToken(request.getCookies());
 
         if (refreshToken == null) {
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
@@ -29,12 +29,12 @@ public class ReissueController {
 
         ReissueResponse reissueResponse = reissueService.reissue(refreshToken);
 
-        if(reissueResponse.getAccessToken() == null) {
+        if (reissueResponse.getAccessToken() == null) {
             return new ResponseEntity<>(reissueResponse.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
         response.setHeader("Access", reissueResponse.getAccessToken());
-        response.addCookie(CookieUtil.createCookie("Refresh", reissueResponse.getRefreshToke()));
+        response.addCookie(CookieUtil.createRefreshCookie(reissueResponse.getRefreshToke()));
 
         return ResponseEntity.ok().build();
     }
