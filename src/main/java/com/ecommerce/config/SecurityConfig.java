@@ -51,7 +51,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((auth) -> auth
                 // 검색, 조회, 로그인, 회원가입은 비회원, 회원 모두 허용
-                .requestMatchers("/", "/categories/**", "/products/**", "/search", "/signin").permitAll()
+                .requestMatchers("/", "/categories/**", "/products/**", "/search", "/signin", "/reissue").permitAll()
                 .requestMatchers(HttpMethod.POST, "/members").permitAll()
                 // 그 외 모든 기능은 회원만 허용
                 .anyRequest().authenticated()
