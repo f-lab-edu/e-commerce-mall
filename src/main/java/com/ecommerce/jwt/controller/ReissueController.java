@@ -3,7 +3,6 @@ package com.ecommerce.jwt.controller;
 import com.ecommerce.jwt.dto.ReissueResponse;
 import com.ecommerce.jwt.service.ReissueService;
 import com.ecommerce.utils.CookieUtil;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +21,7 @@ public class ReissueController {
 
     @PostMapping("")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = null;
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals("Refresh")) {
-                refreshToken = cookie.getValue();
-            }
-        }
+        String refreshToken = CookieUtil.getCookieValue(request, "Refresh");
 
         if (refreshToken == null) {
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
