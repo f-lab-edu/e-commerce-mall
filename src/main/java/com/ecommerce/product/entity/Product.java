@@ -49,10 +49,10 @@ public class Product extends BaseTimeEntity {
     private int deliveryFee;
 
     @NotNull
-    private boolean fastDelivery;
+    private Integer fastDelivery;
 
     @Builder
-    public Product(Long id, Category category, String name, BigDecimal price, String sumImg, String detailImg, String brand, int stock, int score, int deliveryFee, boolean fastDelivery) {
+    public Product(Long id, Category category, String name, BigDecimal price, String sumImg, String detailImg, String brand, int stock, int score, int deliveryFee, Integer fastDelivery) {
         this.id = id;
         this.category = category;
         this.name = name;
