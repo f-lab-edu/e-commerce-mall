@@ -1,6 +1,7 @@
 package com.ecommerce.category.entity;
 
 import com.ecommerce.common.BaseTimeEntity;
+import com.ecommerce.product.entity.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -23,9 +24,6 @@ public class Category extends BaseTimeEntity {
     @NotNull
     private String name;
 
-    @NotNull
-    private int depth;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
@@ -34,16 +32,19 @@ public class Category extends BaseTimeEntity {
     private List<Category> child = new ArrayList<>();
 
     @NotNull
-    @ColumnDefault("-1")
+    @ColumnDefault("100")
     private int sort;
 
+    @OneToMany(mappedBy = "category")
+    private List<Product> products = new ArrayList<>();
+
     @Builder
-    public Category(Long id, String name, int depth, Category parent, List<Category> child, int sort) {
+    public Category(Long id, String name, Category parent, List<Category> child, int sort, List<Product> products) {
         this.id = id;
         this.name = name;
-        this.depth = depth;
         this.parent = parent;
         this.child = child;
         this.sort = sort;
+        this.products = products;
     }
 }
