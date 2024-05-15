@@ -43,3 +43,4 @@ bin/
 .DS_Store
 
 application-*.yml
+*.sql
