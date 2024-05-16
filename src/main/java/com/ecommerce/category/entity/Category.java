@@ -2,6 +2,7 @@ package com.ecommerce.category.entity;
 
 import com.ecommerce.common.BaseTimeEntity;
 import com.ecommerce.product.entity.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -24,6 +25,7 @@ public class Category extends BaseTimeEntity {
     @NotNull
     private String name;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
