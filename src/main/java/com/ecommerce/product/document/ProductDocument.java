@@ -1,7 +1,11 @@
 package com.ecommerce.product.document;
 
 import com.ecommerce.product.entity.Product;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -9,7 +13,10 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Getter
 @Document(indexName = "products")
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductDocument {
 
     @Id
@@ -31,10 +38,10 @@ public class ProductDocument {
     @Field(type = FieldType.Boolean)
     private boolean fastDelivery;
 
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second_millis)
     private LocalDateTime createdAt;
 
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second_millis)
     private LocalDateTime updatedAt;
 
     public ProductDocument(Product product) {
