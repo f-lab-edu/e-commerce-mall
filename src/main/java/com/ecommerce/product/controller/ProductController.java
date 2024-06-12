@@ -1,5 +1,6 @@
 package com.ecommerce.product.controller;
 
+import com.ecommerce.product.dto.DeliveryType;
 import com.ecommerce.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> search(@RequestParam String keyword) {
-        Map<String, Object> result = productService.search(keyword);
+    public ResponseEntity<Map<String, Object>> search(@RequestParam String keyword, @RequestParam DeliveryType deliveryType) {
+        Map<String, Object> result = productService.search(keyword, deliveryType);
         return ResponseEntity.ok().body(result);
     }
 }
