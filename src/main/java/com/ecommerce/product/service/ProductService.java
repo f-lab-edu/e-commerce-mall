@@ -34,10 +34,10 @@ public class ProductService {
      * @param keyword
      * @return map
      */
-    public Map<String, Object> search(String keyword, DeliveryType deliveryType, SortType sortType) {
+    public Map<String, Object> search(String keyword, DeliveryType deliveryType, SortType sortKey) {
 
         // 쿼리문 만들기
-        Query query = makeSearchQuery(keyword, deliveryType, sortType);
+        Query query = makeSearchQuery(keyword, deliveryType, sortKey);
 
         // 검색 실행
         SearchHits<ProductDocument> searchHits = elasticsearchOperations.search(query, ProductDocument.class);
@@ -59,7 +59,7 @@ public class ProductService {
      *
      * @return query
      */
-    private Query makeSearchQuery(String keyword, DeliveryType deliveryType, SortType sortType) {
+    private Query makeSearchQuery(String keyword, DeliveryType deliveryType, SortType sortKey) {
         // 쿼리 생성
 
         // 키워드 적용할 필드 리스트
@@ -82,8 +82,8 @@ public class ProductService {
                 .withSort(s -> s
                         .field(
                                 p -> p
-                                .field(sortType.getFieldName())
-                                .order(sortType.getSortOrder())
+                                .field(sortKey.getFieldName())
+                                .order(sortKey.getSortOrder())
                         )
                 ).build();
     }
