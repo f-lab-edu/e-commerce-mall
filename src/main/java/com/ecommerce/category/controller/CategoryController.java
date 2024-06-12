@@ -1,6 +1,7 @@
 package com.ecommerce.category.controller;
 
 import com.ecommerce.category.dto.CategoryResponse;
+import com.ecommerce.category.entity.Category;
 import com.ecommerce.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,10 @@ public class CategoryController {
 
     @GetMapping("")
     public ResponseEntity<List<CategoryResponse>> readCategories() {
-        List<CategoryResponse> categories = categoryService.readCategories();
+        List<CategoryResponse> categories = categoryService.readCategories().stream()
+                .filter((Category category) -> category.getParent() == null)
+                .map(CategoryResponse::new)
+                .toList();
         return ResponseEntity.ok().body(categories);
     }
 }

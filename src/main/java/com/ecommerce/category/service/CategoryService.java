@@ -14,11 +14,8 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public List<CategoryResponse> readCategories() {
+    public List<Category> readCategories() {
 
-        return categoryRepository.findAllByOrderBySort().stream()
-                .filter((Category category) -> category.getParent() == null)
-                .map(CategoryResponse::new)
-                .toList();
+        return categoryRepository.findAllByOrderBySort();
     }
 }
