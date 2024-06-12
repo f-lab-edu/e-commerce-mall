@@ -1,6 +1,5 @@
 package com.ecommerce.category.service;
 
-import com.ecommerce.category.dto.CategoryResponse;
 import com.ecommerce.category.entity.Category;
 import com.ecommerce.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,6 @@ public class CategoryService {
 
     public List<Category> readCategories() {
 
-        return categoryRepository.findAllByOrderBySort();
+        return categoryRepository.findAllByOrderBySortKey();
     }
 }

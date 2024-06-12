@@ -11,12 +11,12 @@ public class CategoryResponse {
     private long id;
     private String name;
     private List<CategoryResponse> child;
-    private int sort;
+    private int sortKey;
 
     public CategoryResponse(Category category) {
         this.id = category.getId();
         this.name = category.getName();
         this.child = category.getChild().stream().map(CategoryResponse::new).toList();
-        this.sort = category.getSort();
+        this.sortKey = category.getSortKey();
     }
 }

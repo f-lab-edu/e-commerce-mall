@@ -35,18 +35,18 @@ public class Category extends BaseTimeEntity {
 
     @NotNull
     @ColumnDefault("100")
-    private int sort;
+    private int sortKey;
 
     @OneToMany(mappedBy = "category")
     private List<Product> products = new ArrayList<>();
 
     @Builder
-    public Category(Long id, String name, Category parent, List<Category> child, int sort, List<Product> products) {
+    public Category(Long id, String name, Category parent, List<Category> child, int sortKey, List<Product> products) {
         this.id = id;
         this.name = name;
         this.parent = parent;
         this.child = child;
-        this.sort = sort;
+        this.sortKey = sortKey;
         this.products = products;
     }
 }
