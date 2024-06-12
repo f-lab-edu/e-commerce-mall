@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductDocumentRepository extends ElasticsearchRepository<ProductDocument, String> {
+    @Deprecated
     @Query("{\"multi_match\":{\"query\":\"?0\",\"fields\":[\"categoryName\",\"name\",\"brand\"]}}")
     SearchHits<ProductDocument> search(String keyword);
 }

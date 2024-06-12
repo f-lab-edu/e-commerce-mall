@@ -1,10 +1,10 @@
 package com.ecommerce.product.service;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.SortOrder;
 import com.ecommerce.product.document.ProductDocument;
 import com.ecommerce.product.dto.DeliveryType;
 import com.ecommerce.product.dto.ProductsSearchResponse;
+import com.ecommerce.product.dto.SortType;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.repository.ProductDocumentRepository;
 import com.ecommerce.product.repository.ProductRepository;
@@ -34,10 +34,10 @@ public class ProductService {
      * @param keyword
      * @return map
      */
-    public Map<String, Object> search(String keyword, DeliveryType deliveryType) {
+    public Map<String, Object> search(String keyword, DeliveryType deliveryType, SortType sortType) {
 
         // 쿼리문 만들기
-        Query query = makeSearchQuery(keyword, deliveryType, "");
+        Query query = makeSearchQuery(keyword, deliveryType, sortType);
 
         // 검색 실행
         SearchHits<ProductDocument> searchHits = elasticsearchOperations.search(query, ProductDocument.class);
@@ -59,7 +59,7 @@ public class ProductService {
      *
      * @return query
      */
-    private Query makeSearchQuery(String keyword, DeliveryType deliveryType, String sortKey) {
+    private Query makeSearchQuery(String keyword, DeliveryType deliveryType, SortType sortType) {
         // 쿼리 생성
 
         // 키워드 적용할 필드 리스트
@@ -78,10 +78,15 @@ public class ProductService {
             queries.add(termQuery);
         }
 
-
-        return NativeQuery.builder().withQuery(q -> q.bool(b -> b.must(queries.stream().map(NativeQuery::getQuery).toList()))).withSort(s -> s.field(p -> p.field("price").order(SortOrder.Asc))).build();
+        return NativeQuery.builder().withQuery(q -> q.bool(b -> b.must(queries.stream().map(NativeQuery::getQuery).toList())))
+                .withSort(s -> s
+                        .field(
+                                p -> p
+                                .field(sortType.getFieldName())
+                                .order(sortType.getSortOrder())
+                        )
+                ).build();
     }
-
 
     private NativeQuery makeMultiMathQuery(String keyword, List<String> fields) {
         return NativeQuery.builder().withQuery(q -> q.multiMatch(m -> m.query(keyword).fields(fields))).build();
