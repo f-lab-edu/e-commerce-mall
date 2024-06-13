@@ -17,7 +17,7 @@ public class SigninController {
 
   private final SigninService signinService;
 
-  @PostMapping("/signin")
+  @PostMapping("/sign-in")
   public ResponseMessage signin(@Valid @RequestBody SigninRequest request) {
     return signinService.signin(request.getEmail(), request.getPassword());
   }
