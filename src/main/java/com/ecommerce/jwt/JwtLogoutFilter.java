@@ -14,6 +14,7 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.filter.GenericFilterBean;
 
+@Deprecated
 @RequiredArgsConstructor
 public class JwtLogoutFilter extends GenericFilterBean {
 

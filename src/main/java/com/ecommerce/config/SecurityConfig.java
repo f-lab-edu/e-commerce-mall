@@ -1,10 +1,11 @@
 package com.ecommerce.config;
 
 import com.ecommerce.jwt.JwtFilter;
-import com.ecommerce.jwt.JwtLogoutFilter;
+import com.ecommerce.jwt.JwtLogoutHandler;
 import com.ecommerce.jwt.JwtUtil;
 import com.ecommerce.jwt.SigninFilter;
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
+import com.ecommerce.jwt.service.JwtLogoutSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +21,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -51,12 +53,12 @@ public class SecurityConfig {
     http.csrf(AbstractHttpConfigurer::disable);
     http.formLogin(AbstractHttpConfigurer::disable);
     http.httpBasic(AbstractHttpConfigurer::disable);
-    http.logout(AbstractHttpConfigurer::disable);
 
     http.authorizeHttpRequests((auth) -> auth
         // 검색, 조회, 로그인, 회원가입은 비회원, 회원 모두 허용
         .requestMatchers("/", "/categories/**", "/products/**", "/search", "/sign-in", "/reissue")
-        .permitAll().requestMatchers(HttpMethod.POST, "/members").permitAll()
+        .permitAll()
+        .requestMatchers(HttpMethod.POST, "/members").permitAll()
         // 그 외 모든 기능은 회원만 허용
         .anyRequest().authenticated());
 
@@ -75,7 +77,12 @@ public class SecurityConfig {
     http.addFilterBefore(new JwtFilter(jwtUtil), SigninFilter.class);
 
     // 로그아웃 필터 등록
-    http.addFilterBefore(new JwtLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class);
+    LogoutHandler logoutHandler = new JwtLogoutHandler(jwtUtil, refreshTokenRepository);
+    LogoutSuccessHandler logoutSuccessHandler = new JwtLogoutSuccessHandler();
+    http.logout(
+        logout -> logout.logoutUrl("/logout")
+            .addLogoutHandler(logoutHandler)
+            .logoutSuccessHandler(logoutSuccessHandler));
 
     return http.build();
   }
