@@ -27,64 +27,61 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
-    private final JwtUtil jwtUtil;
-    private final RefreshTokenRepository refreshTokenRepository;
+  private final AuthenticationConfiguration authenticationConfiguration;
+  private final JwtUtil jwtUtil;
+  private final RefreshTokenRepository refreshTokenRepository;
 
-    @Value("${spring.security.debug:false}")
-    boolean securityDebug;
+  @Value("${spring.security.debug:false}")
+  boolean securityDebug;
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.debug(securityDebug);
-    }
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() {
+    return (web) -> web.debug(securityDebug);
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
+      throws Exception {
+    return configuration.getAuthenticationManager();
+  }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(AbstractHttpConfigurer::disable);
-        http.formLogin(AbstractHttpConfigurer::disable);
-        http.httpBasic(AbstractHttpConfigurer::disable);
-        http.logout(AbstractHttpConfigurer::disable);
+    http.csrf(AbstractHttpConfigurer::disable);
+    http.formLogin(AbstractHttpConfigurer::disable);
+    http.httpBasic(AbstractHttpConfigurer::disable);
+    http.logout(AbstractHttpConfigurer::disable);
 
-        http.authorizeHttpRequests((auth) -> auth
-                // 검색, 조회, 로그인, 회원가입은 비회원, 회원 모두 허용
-                .requestMatchers("/", "/categories/**", "/products/**", "/search", "/sign-in", "/reissue").permitAll()
-                .requestMatchers(HttpMethod.POST, "/members").permitAll()
-                // 그 외 모든 기능은 회원만 허용
-                .anyRequest().authenticated()
-        );
+    http.authorizeHttpRequests((auth) -> auth
+        // 검색, 조회, 로그인, 회원가입은 비회원, 회원 모두 허용
+        .requestMatchers("/", "/categories/**", "/products/**", "/search", "/sign-in", "/reissue")
+        .permitAll().requestMatchers(HttpMethod.POST, "/members").permitAll()
+        // 그 외 모든 기능은 회원만 허용
+        .anyRequest().authenticated());
 
-        http.sessionManagement((session) -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
+    http.sessionManagement(
+        (session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        // 로그인 필터 등록
-        SigninFilter signinFilter = new SigninFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenRepository);
-        signinFilter.setFilterProcessesUrl("/sign-in");
-        signinFilter.setUsernameParameter("email");
+    // 로그인 필터 등록
+    SigninFilter signinFilter = new SigninFilter(authenticationManager(authenticationConfiguration),
+        jwtUtil, refreshTokenRepository);
+    signinFilter.setFilterProcessesUrl("/sign-in");
+    signinFilter.setUsernameParameter("email");
 
-        http.addFilterAt(signinFilter, UsernamePasswordAuthenticationFilter.class);
+    http.addFilterAt(signinFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // JwtFilter 등록
-        http.addFilterBefore(new JwtFilter(jwtUtil), SigninFilter.class);
+    // JwtFilter 등록
+    http.addFilterBefore(new JwtFilter(jwtUtil), SigninFilter.class);
 
-        // 로그아웃 필터 등록
-        http.addFilterBefore(new JwtLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class);
+    // 로그아웃 필터 등록
+    http.addFilterBefore(new JwtLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class);
 
+    return http.build();
+  }
 
-
-
-        return http.build();
-    }
-
-    @Bean
-    public BCryptPasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public BCryptPasswordEncoder encoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

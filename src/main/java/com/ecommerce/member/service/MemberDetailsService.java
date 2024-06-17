@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberDetailsService implements UserDetailsService {
 
-    private final MemberRepository memberRepository;
+  private final MemberRepository memberRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(username)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    Member member = memberRepository.findByEmail(username)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        return new MemberDetails(member);
-    }
+    return new MemberDetails(member);
+  }
 }

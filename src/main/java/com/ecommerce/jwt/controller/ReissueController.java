@@ -17,25 +17,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/reissue")
 public class ReissueController {
 
-    private final ReissueService reissueService;
+  private final ReissueService reissueService;
 
-    @PostMapping("")
-    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = CookieUtil.getRefreshToken(request.getCookies());
+  @PostMapping("")
+  public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+    String refreshToken = CookieUtil.getRefreshToken(request.getCookies());
 
-        if (refreshToken == null) {
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
-        }
-
-        ReissueResponse reissueResponse = reissueService.reissue(refreshToken);
-
-        if (reissueResponse.getAccessToken() == null) {
-            return new ResponseEntity<>(reissueResponse.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-
-        response.setHeader("Access", reissueResponse.getAccessToken());
-        response.addCookie(CookieUtil.createRefreshCookie(reissueResponse.getRefreshToke()));
-
-        return ResponseEntity.ok().build();
+    if (refreshToken == null) {
+      return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
     }
+
+    ReissueResponse reissueResponse = reissueService.reissue(refreshToken);
+
+    if (reissueResponse.getAccessToken() == null) {
+      return new ResponseEntity<>(reissueResponse.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    response.setHeader("Access", reissueResponse.getAccessToken());
+    response.addCookie(CookieUtil.createRefreshCookie(reissueResponse.getRefreshToke()));
+
+    return ResponseEntity.ok().build();
+  }
 }
