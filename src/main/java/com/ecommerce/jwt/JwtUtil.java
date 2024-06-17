@@ -11,25 +11,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-  private SecretKey secretKey;
   private static final String JWT_PAYLOAD_CATEGORY = "category";
   private static final String JWT_PAYLOAD_EMAIL = "email";
   private static final String ACCESS_TOKEN_CATEGORY = "access";
   private static final String REFRESH_TOKEN_CATEGORY = "refresh";
-  private static final Long ACCESS_TOKEN_EXPIREDMS = 600000L;
-  public static final Long REFRESH_TOKEN_EXPIREDMS = 86400000L;
+  private static final Long ACCESS_TOKEN_EXPIRATION_MS = 600000L;
+  public static final Long REFRESH_TOKEN_EXPIRATION_MS = 86400000L;
+  private SecretKey secretKey;
 
   public JwtUtil(@Value("${spring.jwt.secret}") String secret) {
     this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
         Jwts.SIG.HS256.key().build().getAlgorithm());
   }
 
-  public Boolean isAccess(String token) {
-    return getCategory(token).equals(ACCESS_TOKEN_CATEGORY);
+  public Boolean isAccessToken(String token) {
+    return ACCESS_TOKEN_CATEGORY.equals(getCategory(token));
   }
 
-  public Boolean isRefresh(String token) {
-    return getCategory(token).equals(REFRESH_TOKEN_CATEGORY);
+  public Boolean isRefreshToken(String token) {
+    return REFRESH_TOKEN_CATEGORY.equals(getCategory(token));
   }
 
   public String getCategory(String token) {
@@ -48,11 +48,11 @@ public class JwtUtil {
   }
 
   public String createAccessToken(String email) {
-    return createJWT(ACCESS_TOKEN_CATEGORY, email, ACCESS_TOKEN_EXPIREDMS);
+    return createJWT(ACCESS_TOKEN_CATEGORY, email, ACCESS_TOKEN_EXPIRATION_MS);
   }
 
   public String createRefreshToken(String email) {
-    return createJWT(REFRESH_TOKEN_CATEGORY, email, REFRESH_TOKEN_EXPIREDMS);
+    return createJWT(REFRESH_TOKEN_CATEGORY, email, REFRESH_TOKEN_EXPIRATION_MS);
   }
 
   private String createJWT(String category, String email, Long expiredMs) {

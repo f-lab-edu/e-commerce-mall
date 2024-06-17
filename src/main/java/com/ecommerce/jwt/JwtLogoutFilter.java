@@ -60,7 +60,7 @@ public class JwtLogoutFilter extends GenericFilterBean {
     }
 
     // category check
-    if (!jwtUtil.isRefresh(refreshToken)) {
+    if (!jwtUtil.isRefreshToken(refreshToken)) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return;
     }

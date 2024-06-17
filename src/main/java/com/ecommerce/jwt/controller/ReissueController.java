@@ -34,7 +34,7 @@ public class ReissueController {
     }
 
     response.setHeader("Access", reissueResponse.getAccessToken());
-    response.addCookie(CookieUtil.createRefreshCookie(reissueResponse.getRefreshToke()));
+    response.addCookie(CookieUtil.createRefreshCookie(reissueResponse.getRefreshToken()));
 
     return ResponseEntity.ok().build();
   }

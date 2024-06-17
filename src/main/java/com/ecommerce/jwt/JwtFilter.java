@@ -49,7 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     // category check
-    if (!jwtUtil.isAccess(accessToken)) {
+    if (!jwtUtil.isAccessToken(accessToken)) {
       logger.debug("invalid access token");
       PrintWriter writer = response.getWriter();
       writer.println("invalid access token");
