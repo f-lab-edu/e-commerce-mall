@@ -1,6 +1,9 @@
 package com.ecommerce.jwt.controller;
 
+import com.ecommerce.exception.ExpiredTokenException;
+import com.ecommerce.exception.InvalidTokenException;
 import com.ecommerce.jwt.dto.ReissueResponse;
+import com.ecommerce.jwt.dto.TokenPair;
 import com.ecommerce.jwt.service.ReissueService;
 import com.ecommerce.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,15 +30,21 @@ public class ReissueController {
       return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
     }
 
-    ReissueResponse reissueResponse = reissueService.reissue(refreshToken);
-
-    if (reissueResponse.getAccessToken() == null) {
-      return new ResponseEntity<>(reissueResponse.getMessage(), HttpStatus.BAD_REQUEST);
+    try {
+      TokenPair tokens = reissueService.reissue(refreshToken);
+      return ResponseEntity.ok().body(ReissueResponse.builder()
+          .accessToken(tokens.getAccessToken())
+          .refreshToken(tokens.getRefreshToken())
+          .build());
+    } catch (ExpiredTokenException e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(ReissueResponse.builder().message(e.getMessage()));
+    } catch (InvalidTokenException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN)
+          .body(ReissueResponse.builder().message(e.getMessage()));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(ReissueResponse.builder().message(e.getMessage()));
     }
-
-    response.setHeader("Access", reissueResponse.getAccessToken());
-    response.addCookie(CookieUtil.createRefreshCookie(reissueResponse.getRefreshToken()));
-
-    return ResponseEntity.ok().build();
   }
 }

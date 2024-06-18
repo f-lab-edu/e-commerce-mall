@@ -1,7 +1,9 @@
 package com.ecommerce.jwt.service;
 
+import com.ecommerce.exception.ExpiredTokenException;
+import com.ecommerce.exception.InvalidTokenException;
 import com.ecommerce.jwt.JwtUtil;
-import com.ecommerce.jwt.dto.ReissueResponse;
+import com.ecommerce.jwt.dto.TokenPair;
 import com.ecommerce.jwt.entity.RefreshToken;
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -17,44 +19,34 @@ public class ReissueService {
   private final RefreshTokenRepository refreshTokenRepository;
 
   @Transactional
-  public ReissueResponse reissue(String refreshToken) {
+  public TokenPair reissue(String refreshToken) {
     // expired check
     try {
       jwtUtil.isExpired(refreshToken);
     } catch (ExpiredJwtException e) {
-      return ReissueResponse.builder()
-          .message("refresh token expired")
-          .build();
+      throw new ExpiredTokenException("Refresh token expired");
     }
 
-    // category check
+    // Check if token is a valid refresh token
     if (!jwtUtil.isRefreshToken(refreshToken)) {
-      return ReissueResponse.builder()
-          .message("invalid refresh token")
-          .build();
+      throw new InvalidTokenException("Invalid refresh token");
     }
 
     String email = jwtUtil.getEmail(refreshToken);
 
-    // refresh in DB check
+    // Check if refresh token exists in DB
     RefreshToken refreshTokenEntity = refreshTokenRepository.findByEmailAndRefreshToken(email,
         refreshToken);
     if (refreshTokenEntity == null) {
-      return ReissueResponse.builder()
-          .message("invalid refresh token")
-          .build();
+      throw new InvalidTokenException("Invalid refresh token");
     }
 
-    // make new JWT
+    // Create new tokens
     String newAccess = jwtUtil.createAccessToken(email);
     String newRefresh = jwtUtil.createRefreshToken(email);
 
     refreshTokenEntity.update(newRefresh);
 
-    return ReissueResponse.builder()
-        .accessToken(newAccess)
-        .refreshToken(newRefresh)
-        .message("success")
-        .build();
+    return new TokenPair(newAccess, newRefresh);
   }
 }
