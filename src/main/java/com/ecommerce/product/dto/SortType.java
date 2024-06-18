@@ -5,16 +5,18 @@ import lombok.Getter;
 
 @Getter
 public enum SortType {
-    LATEST("createAt", SortOrder.Desc),
-    LOWPRICE("price", SortOrder.Asc),
-    HIGHPRICE("price", SortOrder.Desc),
-    RANK("score", SortOrder.Asc);
+  LATEST("createAt", SortOrder.Desc, false),
+  LOWPRICE("price", SortOrder.Asc, true),
+  HIGHPRICE("price", SortOrder.Desc, false),
+  RANK("score", SortOrder.Asc, true);
 
-    private final String fieldName;
-    private final SortOrder sortOrder;
+  private final String fieldName;
+  private final SortOrder sortOrder;
+  private final boolean asc;
 
-    SortType(String fieldName, SortOrder sortOrder) {
-        this.fieldName = fieldName;
-        this.sortOrder = sortOrder;
-    }
+  SortType(String fieldName, SortOrder sortOrder, boolean asc) {
+    this.fieldName = fieldName;
+    this.sortOrder = sortOrder;
+    this.asc = asc;
+  }
 }

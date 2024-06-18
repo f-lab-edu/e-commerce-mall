@@ -2,8 +2,10 @@ package com.ecommerce.product.controller;
 
 import com.ecommerce.product.document.ProductDocument;
 import com.ecommerce.product.dto.DeliveryType;
+import com.ecommerce.product.dto.ProductsResponse;
 import com.ecommerce.product.dto.ProductsSearchResponse;
 import com.ecommerce.product.dto.SortType;
+import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
 import java.util.HashMap;
 import java.util.List;
@@ -36,5 +38,12 @@ public class ProductController {
         .map(hit -> new ProductsSearchResponse(hit.getContent())).toList();
     result.put("data", productsSearchResponses);
     return ResponseEntity.ok().body(result);
+  }
+
+  @GetMapping("/{categoryId}/{sortKey}")
+  public ResponseEntity<List<ProductsResponse>> readProducts(@PathVariable Long categoryId,
+      @PathVariable SortType sortKey) {
+    List<Product> products = productService.readProducts(categoryId, sortKey);
+    return ResponseEntity.ok().body(products.stream().map(ProductsResponse::new).toList());
   }
 }

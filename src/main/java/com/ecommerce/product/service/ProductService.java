@@ -7,6 +7,11 @@ import com.ecommerce.product.dto.SortType;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.repository.ProductDocumentRepository;
 import com.ecommerce.product.repository.ProductRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +29,8 @@ public class ProductService {
   private final ProductRepository productRepository;
   private final ProductDocumentRepository productDocumentRepository;
   private final ElasticsearchOperations elasticsearchOperations;
+  @PersistenceContext
+  private EntityManager entityManager;
 
   /**
    * 검색 service
@@ -97,5 +104,25 @@ public class ProductService {
       ProductDocument productDocument = new ProductDocument(product);
       productDocumentRepository.save(productDocument);
     }
+  }
+
+  public List<Product> readProducts(long id, SortType sortKey) {
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Product> query = cb.createQuery(Product.class);
+    Root<Product> product = query.from(Product.class);
+
+    query.where(cb.equal(product.get("category").get("id"), id));
+
+    if (sortKey != null) {
+      if (sortKey.isAsc()) {
+        query.orderBy(cb.asc(product.get(sortKey.getFieldName())));
+      } else {
+        query.orderBy(cb.desc(product.get(sortKey.getFieldName())));
+      }
+    } else {
+      query.orderBy(cb.desc(product.get(SortType.RANK.getFieldName())));
+    }
+
+    return entityManager.createQuery(query).getResultList();
   }
 }
