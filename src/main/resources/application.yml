@@ -1,7 +1,9 @@
 spring:
   profiles:
     active: dev
-    include: db
+    include:
+    - db
+    - elasticsearch
 
 logging:
   level:
