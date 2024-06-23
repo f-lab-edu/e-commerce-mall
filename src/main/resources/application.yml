@@ -2,8 +2,9 @@ spring:
   profiles:
     active: dev
     include:
-    - db
-    - elasticsearch
+      - db
+      - elasticsearch
+      - kafka
 
 logging:
   level:
