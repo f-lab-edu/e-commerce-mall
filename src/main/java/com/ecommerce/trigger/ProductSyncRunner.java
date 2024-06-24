@@ -7,11 +7,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProductSyncRunner implements CommandLineRunner {
-    @Autowired
-    private ProductService productService;
 
-    @Override
-    public void run(String... args) throws Exception {
-        productService.sync();
-    }
+  @Autowired
+  private ProductService productService;
+
+  @Override
+  public void run(String... args) throws Exception {
+//        productService.sync();
+  }
 }
