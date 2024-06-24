@@ -14,8 +14,8 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,17 +31,30 @@ public class ProductController {
   private final ProductService productService;
 
   /**
-   * 상품 추가 (판매자만 접근 가능)
+   * 상품 등록 (판매자만 접근 가능)
    *
    * @param request
    * @return id
    */
   @PostMapping("")
-  @Transactional
-  public ResponseEntity<?> addProduct(@RequestBody AddProductRequest request) {
+  public ResponseEntity<Product> addProduct(@RequestBody AddProductRequest request) {
 
     Product product = productService.save(request);
 
+    return ResponseEntity.ok().body(product);
+  }
+
+  /**
+   * 썸네일 변경
+   *
+   * @param id
+   * @param thumbImg
+   * @return
+   */
+  @PatchMapping("/{id}")
+  public ResponseEntity<Product> updateThumbImg(@PathVariable Long id,
+      @RequestBody String thumbImg) {
+    Product product = productService.updateThumbImg(id, thumbImg);
     return ResponseEntity.ok().body(product);
   }
 

@@ -17,7 +17,7 @@ public class KafkaConsumer {
   @KafkaListener(topics = "products", groupId = "elasticsearch-product-group")
   public void consume(ProductDocument productDocument) {
     try {
-      productDocumentRepository.save(productDocument);
+      productDocumentRepository.save(productDocument); // 객체 id값이 있으면 insert, 없으면 update
     } catch (Exception e) {
       // 예외 처리 로직 추가
       log.error("Error processing Kafka message: {}", e.getMessage(), e);

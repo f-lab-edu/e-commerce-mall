@@ -45,13 +45,14 @@ public class ProductService {
    * @param productRequest
    * @return saveProduct
    */
+  @Transactional
   public Product save(AddProductRequest productRequest) {
     Category category = categoryService.findCategoryById(productRequest.getCategoryId());
     Product product = Product.builder()
         .category(category)
         .name(productRequest.getName())
         .price(productRequest.getPrice())
-        .sumImg(productRequest.getSumImg())
+        .thumbImg(productRequest.getThumbImg())
         .detailImg(productRequest.getDetailImg())
         .brand(productRequest.getBrand())
         .stock(productRequest.getStock())
@@ -64,6 +65,23 @@ public class ProductService {
     // 2. producer에 데이터 전달
     kafkaProducer.sendProduct(saveProduct);
     return saveProduct;
+  }
+
+  /**
+   * 썸네일 변경
+   *
+   * @param id
+   * @param thumbImg
+   * @return
+   */
+  @Transactional
+  public Product updateThumbImg(Long id, String thumbImg) {
+    Product product = productRepository.findById(id).orElseThrow();
+    product.updateThumbImg(thumbImg);
+    System.out.println("썸네일 저장되는 값 :: " + thumbImg);
+
+    kafkaProducer.sendProduct(product);
+    return product;
   }
 
   /**
