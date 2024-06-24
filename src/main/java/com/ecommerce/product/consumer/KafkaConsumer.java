@@ -16,6 +16,7 @@ public class KafkaConsumer {
 
   @KafkaListener(topics = "products", groupId = "elasticsearch-product-group")
   public void consume(ProductDocument productDocument) {
+    log.info("Consumer running : " + productDocument.getId());
     try {
       productDocumentRepository.save(productDocument); // 객체 id값이 있으면 insert, 없으면 update
     } catch (Exception e) {

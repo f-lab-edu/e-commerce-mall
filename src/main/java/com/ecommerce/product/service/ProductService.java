@@ -148,13 +148,9 @@ public class ProductService {
 
 
   @Transactional
-  public void sync() {
+  public void init() {
     List<Product> products = productRepository.findAll();
-
-    for (Product product : products) {
-      ProductDocument productDocument = new ProductDocument(product);
-      productDocumentRepository.save(productDocument);
-    }
+    products.forEach(kafkaProducer::sendProduct);
   }
 
   public List<Product> readProducts(long id, SortType sortKey) {

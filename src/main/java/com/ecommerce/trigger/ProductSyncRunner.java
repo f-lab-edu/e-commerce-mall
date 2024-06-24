@@ -13,6 +13,6 @@ public class ProductSyncRunner implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-//        productService.sync();
+    productService.init();
   }
 }
