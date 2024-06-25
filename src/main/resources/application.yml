@@ -4,6 +4,7 @@ spring:
     include:
     - db
     - jwt
+    - elasticsearch
   jpa:
     hibernate:
       ddl-auto: create

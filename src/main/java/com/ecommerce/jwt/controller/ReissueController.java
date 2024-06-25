@@ -32,6 +32,8 @@ public class ReissueController {
 
     try {
       TokenPair tokens = reissueService.reissue(refreshToken);
+      response.setHeader("Access", tokens.getAccessToken());
+      response.addCookie(CookieUtil.createRefreshCookie(tokens.getRefreshToken()));
       return ResponseEntity.ok().body(ReissueResponse.builder()
           .accessToken(tokens.getAccessToken())
           .refreshToken(tokens.getRefreshToken())
