@@ -10,6 +10,7 @@ import com.ecommerce.product.document.ProductDocument;
 import com.ecommerce.product.entity.Product;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -34,6 +35,7 @@ class KafkaProducerTest {
     MockitoAnnotations.openMocks(this);
   }
 
+  @DisplayName("KafkaProducer가 Product 전송을 성공한다")
   @Test
   void testSendProduct() {
     // given
