@@ -16,15 +16,7 @@ public class KafkaConsumer {
 
   @KafkaListener(topics = "products", groupId = "elasticsearch-product-group")
   public void consume(ProductDocument productDocument) {
-    log.info("Consumer running : " + productDocument.getId());
-    try {
-      productDocumentRepository.save(productDocument); // 객체 id값이 있으면 insert, 없으면 update
-    } catch (Exception e) {
-      // 예외 처리 로직 추가
-      log.error("Error processing Kafka message: {}", e.getMessage(), e);
-      // 여기서 예외 처리 로직을 추가하여 필요한 경우에 대응
-      throw new RuntimeException("Error processing Kafka message", e);
-    }
+    productDocumentRepository.save(productDocument); // 객체 id값이 있으면 insert, 없으면 update
   }
 
 }
