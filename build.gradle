@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.0.2'
     id 'io.spring.dependency-management' version '1.1.0'
+    id 'jacoco'
 }
 
 group = 'com.ecommerce'
@@ -35,5 +36,55 @@ dependencies {
 }
 
 test {
+    // 커버리지 결과 데이터를 지정할 경로 변경
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/jacoco.exec")
+    }
     useJUnitPlatform()
+}
+
+jacoco {
+    // JaCoCo 버전
+    toolVersion = '0.8.12' // https://www.jacoco.org/jacoco/trunk/doc/changes.html
+
+//  테스트결과 리포트를 저장할 경로 변경
+//  default는 "$/jacoco"
+//  reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+// 테스트 리포트 설정
+jacocoTestReport {
+    reports {
+        // 원하는 리포트를 켜고 끌 수 있습니다.
+        html.required = true
+        xml.required = false
+        csv.required = false
+
+//      각 리포트 타입 마다 리포트 저장 경로를 설정할 수 있다.
+//      html.destination = file("$buildDir/reports/jacoco/html")
+//      xml.destination = file("$buildDir/reports/jacoco/xml")
+
+        // test 수행 이후 리포트 생성
+        finalizedBy jacocoTestReport
+    }
+
+    // 커버리지에 대한 설정
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                // rule 활성화
+                enabled = true
+
+                // 룰을 체크할 단위는 클래스 단위
+                element = 'CLASS'
+
+                // 라인 커버리지를 최소한 80% 만족
+                limit {
+                    counter = 'LINE'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.80
+                }
+            }
+        }
+    }
 }
