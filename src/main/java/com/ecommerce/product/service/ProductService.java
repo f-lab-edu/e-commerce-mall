@@ -1,10 +1,14 @@
 package com.ecommerce.product.service;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
+import com.ecommerce.category.entity.Category;
+import com.ecommerce.category.service.CategoryService;
 import com.ecommerce.product.document.ProductDocument;
+import com.ecommerce.product.dto.AddProductRequest;
 import com.ecommerce.product.dto.DeliveryType;
 import com.ecommerce.product.dto.SortType;
 import com.ecommerce.product.entity.Product;
+import com.ecommerce.product.producer.KafkaProducer;
 import com.ecommerce.product.repository.ProductDocumentRepository;
 import com.ecommerce.product.repository.ProductRepository;
 import jakarta.persistence.EntityManager;
@@ -29,8 +33,55 @@ public class ProductService {
   private final ProductRepository productRepository;
   private final ProductDocumentRepository productDocumentRepository;
   private final ElasticsearchOperations elasticsearchOperations;
+  private final CategoryService categoryService;
+  private final KafkaProducer kafkaProducer;
   @PersistenceContext
   private EntityManager entityManager;
+
+
+  /**
+   * 상품 저장
+   *
+   * @param productRequest
+   * @return saveProduct
+   */
+  @Transactional
+  public Product save(AddProductRequest productRequest) {
+    Category category = categoryService.findCategoryById(productRequest.getCategoryId());
+    Product product = Product.builder()
+        .category(category)
+        .name(productRequest.getName())
+        .price(productRequest.getPrice())
+        .thumbImg(productRequest.getThumbImg())
+        .detailImg(productRequest.getDetailImg())
+        .brand(productRequest.getBrand())
+        .stock(productRequest.getStock())
+        .deliveryFee(productRequest.getDeliveryFee())
+        .fastDelivery(productRequest.getFastDelivery())
+        .build();
+    // 1. DB 저장
+    Product saveProduct = productRepository.save(product);
+
+    // 2. producer에 데이터 전달
+    kafkaProducer.sendProduct(saveProduct);
+    return saveProduct;
+  }
+
+  /**
+   * 썸네일 변경
+   *
+   * @param id
+   * @param thumbImg
+   * @return
+   */
+  @Transactional
+  public Product updateThumbImg(Long id, String thumbImg) {
+    Product product = productRepository.findById(id).orElseThrow();
+    product.updateThumbImg(thumbImg);
+
+    kafkaProducer.sendProduct(product);
+    return product;
+  }
 
   /**
    * 검색 service
@@ -45,7 +96,6 @@ public class ProductService {
     Query query = makeSearchQuery(keyword, deliveryType, sortKey);
 
     // 검색 실행
-
     return elasticsearchOperations.search(query, ProductDocument.class);
   }
 
@@ -97,13 +147,9 @@ public class ProductService {
 
 
   @Transactional
-  public void sync() {
+  public void init() {
     List<Product> products = productRepository.findAll();
-
-    for (Product product : products) {
-      ProductDocument productDocument = new ProductDocument(product);
-      productDocumentRepository.save(productDocument);
-    }
+    products.forEach(kafkaProducer::sendProduct);
   }
 
   public List<Product> readProducts(long id, SortType sortKey) {

@@ -2,9 +2,10 @@ spring:
   profiles:
     active: dev
     include:
-    - db
-    - jwt
-    - elasticsearch
+      - db
+      - elasticsearch
+      - kafka
+      - jwt
   jpa:
     hibernate:
       ddl-auto: create
