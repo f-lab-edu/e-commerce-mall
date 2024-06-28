@@ -3,8 +3,8 @@ package com.ecommerce.member.service;
 import com.ecommerce.member.dto.SignupRequest;
 import com.ecommerce.member.entity.Member;
 import com.ecommerce.member.repository.MemberRepository;
-import com.ecommerce.utils.SHA256Util;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
   private final MemberRepository memberRepository;
+  private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   public Long save(SignupRequest request) {
     return memberRepository
         .save(
             Member.builder()
                 .email(request.getEmail())
-                .password(SHA256Util.encrypt(request.getPassword()))
+                .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .name(request.getName())
                 .phone(request.getPhone())
                 .build())

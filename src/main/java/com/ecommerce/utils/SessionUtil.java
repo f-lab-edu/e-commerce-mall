@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class SessionUtil {
+
   private static final String LOGIN_MEMBER_ID = "LOGIN_MEMBER_ID";
 
   // 로그인한 회원 ID 세션에 저장

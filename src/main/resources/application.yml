@@ -5,8 +5,24 @@ spring:
       - db
       - elasticsearch
       - kafka
+      - jwt
+  jpa:
+    hibernate:
+      ddl-auto: create
+      jdbc:
+        batch_size=50
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+  # 스프링 시큐리티 디버깅 보기
+  security:
+    debug: true
 
 logging:
   level:
     root: INFO
-    com.wanted.sns_feed_service: DEBUG
+    com.ecommerce: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.extract: TRACE

@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
+@Deprecated
 @RestController
 @RequiredArgsConstructor
 public class SigninController {
 
   private final SigninService signinService;
 
-  @PostMapping("/signin")
+  @PostMapping("/sign-in")
   public ResponseMessage signin(@Valid @RequestBody SigninRequest request) {
     return signinService.signin(request.getEmail(), request.getPassword());
   }

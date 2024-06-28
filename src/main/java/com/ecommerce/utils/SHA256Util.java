@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class SHA256Util {
+
   private static final String ENCRYPTION_TYPE = "SHA-256";
 
   public static String encrypt(String context) {

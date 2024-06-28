@@ -1,7 +1,11 @@
 package com.ecommerce.member.entity;
 
 import com.ecommerce.common.BaseTimeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Member extends BaseTimeEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -22,9 +27,12 @@ public class Member extends BaseTimeEntity {
   @NotNull
   private String email;
 
-  @NotNull private String password;
-  @NotNull private String name;
-  @NotNull private String phone;
+  @NotNull
+  private String password;
+  @NotNull
+  private String name;
+  @NotNull
+  private String phone;
   private String keywords;
 
   public boolean checkPassword(String password) {
