@@ -78,7 +78,6 @@ public class ProductService {
   public Product updateThumbImg(Long id, String thumbImg) {
     Product product = productRepository.findById(id).orElseThrow();
     product.updateThumbImg(thumbImg);
-    System.out.println("썸네일 저장되는 값 :: " + thumbImg);
 
     kafkaProducer.sendProduct(product);
     return product;
