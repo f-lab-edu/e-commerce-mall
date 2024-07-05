@@ -1,4 +1,4 @@
-package com.ecommerce.jwt.controller;
+package com.ecommerce.jwt;
 
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,9 +26,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+//TODO: Mock 객체가 아닌 실제 서버로 통합 테스트 코드 수정
 @SpringBootTest
 @AutoConfigureMockMvc // MockMvc 자동 설정
-class ReissueControllerTest {
+class ReissueIntegrationTest {
 
   @Autowired
   protected MockMvc mockMvc;
