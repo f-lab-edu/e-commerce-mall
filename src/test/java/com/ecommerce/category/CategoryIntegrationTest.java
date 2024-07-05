@@ -1,4 +1,4 @@
-package com.ecommerce.category.controller;
+package com.ecommerce.category;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -21,9 +21,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+//TODO: Mock 객체가 아닌 실제 서버로 통합 테스트 코드 수정
 @SpringBootTest
 @AutoConfigureMockMvc
-class CategoryControllerTest {
+class CategoryIntegrationTest {
 
   @Autowired
   CategoryRepository categoryRepository;
@@ -69,12 +70,5 @@ class CategoryControllerTest {
         .andExpect(jsonPath("$[1].name", is("Test Category2")))
         .andExpect(jsonPath("$[2].id", is(3)))
         .andExpect(jsonPath("$[2].name", is("Test Category3")));
-  }
-
-  // TODO
-  @DisplayName("카테고리 목록 조회에 실패한다.")
-  @Test
-  void readCategoriesFailure() {
-
   }
 }
