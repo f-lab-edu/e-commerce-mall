@@ -55,10 +55,15 @@ public class SecurityConfig {
     http.httpBasic(AbstractHttpConfigurer::disable);
 
     http.authorizeHttpRequests((auth) -> auth
-        // 검색, 조회, 로그인, 회원가입은 비회원, 회원 모두 허용
-        .requestMatchers("/", "/categories/**", "/products/**", "/search", "/sign-in", "/reissue")
-        .permitAll()
+        // 회원 가입 모두 허용
         .requestMatchers(HttpMethod.POST, "/members").permitAll()
+        // 상품 등록, 썸네일 변경 관리자만 허용
+        .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.PATCH, "/products/**").hasRole("ADMIN")
+        // 검색, 조회, 로그인, 모두 허용
+        .requestMatchers("/", "/categories/**", "/products/**", "/search/**", "/sign-in",
+            "/reissue")
+        .permitAll()
         // 그 외 모든 기능은 회원만 허용
         .anyRequest().authenticated());
 

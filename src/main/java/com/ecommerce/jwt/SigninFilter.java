@@ -12,16 +12,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
 
 @RequiredArgsConstructor
+@Slf4j
 public class SigninFilter extends UsernamePasswordAuthenticationFilter {
 
   private final AuthenticationManager authenticationManager;
@@ -56,9 +60,14 @@ public class SigninFilter extends UsernamePasswordAuthenticationFilter {
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
       FilterChain chain, Authentication authResult) throws IOException, ServletException {
     String email = authResult.getName();
-
-    String accessToken = jwtUtil.createAccessToken(email);
-    String refreshToken = jwtUtil.createRefreshToken(email);
+    Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
+    String role = roles.stream()
+        .map(GrantedAuthority::getAuthority)
+        .findFirst()
+        .orElse("");
+    log.debug("role sb :: " + role);
+    String accessToken = jwtUtil.createAccessToken(email, role);
+    String refreshToken = jwtUtil.createRefreshToken(email, role);
 
     RefreshToken refreshTokenEntity = RefreshToken.builder().email(email).refreshToken(refreshToken)
         .build();

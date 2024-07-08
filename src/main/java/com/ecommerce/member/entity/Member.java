@@ -33,6 +33,8 @@ public class Member extends BaseTimeEntity {
   private String name;
   @NotNull
   private String phone;
+  @NotNull
+  private String role;
   private String keywords;
 
   public boolean checkPassword(String password) {

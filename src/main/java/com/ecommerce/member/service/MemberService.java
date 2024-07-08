@@ -17,6 +17,10 @@ public class MemberService {
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   public Long save(SignupRequest request) {
+    String role = "ROLE_BASIC";
+    if (request.getRole() != null) {
+      role = request.getRole();
+    }
     return memberRepository
         .save(
             Member.builder()
@@ -24,6 +28,7 @@ public class MemberService {
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .name(request.getName())
                 .phone(request.getPhone())
+                .role(role)
                 .build())
         .getId();
   }
