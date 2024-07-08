@@ -31,7 +31,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
-    
+
     // Elasticsearch 의존성 추가
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation 'org.springframework.kafka:spring-kafka'
@@ -43,6 +43,8 @@ test {
         destinationFile = file("$buildDir/jacoco/jacoco.exec")
     }
     useJUnitPlatform()
+
+    finalizedBy 'jacocoTestReport'
 }
 
 jacoco {
@@ -51,11 +53,39 @@ jacoco {
 
 jacocoTestReport {
     reports {
-        html.required = true
-        xml.required = false
-        csv.required = false
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(true)
 
-        finalizedBy jacocoTestReport
+        xml.destination file("${buildDir}/jacoco/index.xml")
+        html.destination file("${buildDir}/jacoco/index.html")
+        csv.destination file("${buildDir}/jacoco/index.csv")
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, excludes: [
+                            '**/*Application*',
+                            '**/exception/**',
+                            '**/dto/**',
+                            '**/entity/**',
+                            '**/repository/**',
+                            '**/document/**',
+                            '**/common/**',
+                            '**/config/**',
+                            '**/utils/**',
+                            '**/trigger/**',
+
+
+                            // 현재 사용하지 않는 코드(학습용으로 남겨둔 코드)
+                            '**/JwtLogoutFilter*',
+                            '**/handler/**',
+                            '**/SigninController*',
+                            '**/SessionSigninService*'
+                    ])
+                })
+        )
     }
 
     jacocoTestCoverageVerification {
@@ -70,7 +100,29 @@ jacocoTestReport {
                     value = 'COVEREDRATIO'
                     minimum = 0.80
                 }
+
+                excludes = [
+                        '*.*Application',
+                        '*.exception.*',
+                        '*.dto.*',
+                        '*.entity.*',
+                        '*.repository.*',
+                        '*.document.*',
+                        '*.common.*',
+                        '*.config.*',
+                        '*.utils.*',
+                        '*.trigger.*',
+
+                        // 현재 사용하지 않는 코드(학습용으로 남겨둔 코드)
+                        '*.JwtLogoutFilter',
+                        '*.handler.*',
+                        '*.SigninController',
+                        '*.SessionSigninService'
+                ]
             }
         }
     }
+
+    // test -> jacocoTestReport -> jacocoTestCoverageVerification 실행
+    finalizedBy 'jacocoTestCoverageVerification'
 }
