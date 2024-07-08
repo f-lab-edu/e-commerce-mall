@@ -28,6 +28,7 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -173,6 +174,16 @@ class ProductServiceTest {
 
     verify(elasticsearchOperations).search(any(Query.class), any(Class.class));
     assertThat(result).isEqualTo(mockSearchHits);
+  }
+
+  @DisplayName("초기화 설정에 성공한다.")
+  @Test
+  void init() {
+    given(productRepository.findAll()).willReturn(new ArrayList<>());
+
+    productService.init();
+
+    verify(productRepository, times(1)).findAll();
   }
 
   @DisplayName("카테고리별 상품 조회에 성공한다.")

@@ -9,9 +9,7 @@ import com.ecommerce.member.dto.SignupRequest;
 import com.ecommerce.member.entity.Member;
 import com.ecommerce.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -102,11 +100,10 @@ class MemberIntegrationTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request1)));
 
-    // when - then
-    Assertions.assertThrows(ServletException.class, () -> {
-      mockMvc.perform(post(url)
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(request2)));
-    });
+    // when & then
+    mockMvc.perform(post(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request2)))
+        .andExpect(status().isInternalServerError());
   }
 }
