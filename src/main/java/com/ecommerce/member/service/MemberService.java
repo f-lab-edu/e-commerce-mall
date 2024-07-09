@@ -27,4 +27,9 @@ public class MemberService {
                 .build())
         .getId();
   }
+
+  public Member findByEmail(String email) {
+    return memberRepository.findByEmail(email)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+  }
 }
