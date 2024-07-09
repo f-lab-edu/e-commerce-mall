@@ -171,4 +171,14 @@ public class ProductService {
 
     return entityManager.createQuery(query).getResultList();
   }
+
+  /**
+   * 상품 정보 조회
+   *
+   * @param id
+   * @return
+   */
+  public Product findById(Long id) {
+    return productRepository.findById(id).orElseThrow();
+  }
 }
