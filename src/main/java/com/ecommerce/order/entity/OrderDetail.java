@@ -3,6 +3,8 @@ package com.ecommerce.order.entity;
 import com.ecommerce.product.entity.Product;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,6 +42,7 @@ public class OrderDetail {
   private int quantity;
 
   @NotNull
+  @Enumerated(EnumType.STRING)
   private Status status;
 
 }

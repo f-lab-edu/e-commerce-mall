@@ -2,6 +2,7 @@ package com.ecommerce.order.entity;
 
 import com.ecommerce.common.BaseTimeEntity;
 import com.ecommerce.member.entity.Member;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -44,7 +45,7 @@ public class Order extends BaseTimeEntity {
   @NotNull
   private String phone;
 
-  @OneToMany(mappedBy = "order")
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<OrderDetail> orderDetails;
 
 }
