@@ -50,7 +50,7 @@ class AddressbookControllerTest {
   @DisplayName("기본 배송지 요청에 성공한다.")
   @Test
   void getDefaultAddress() throws Exception {
-    // given=
+    // given
     Member member = Member.builder()
         .id(1L)
         .build();
