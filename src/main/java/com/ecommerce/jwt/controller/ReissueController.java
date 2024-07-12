@@ -40,13 +40,13 @@ public class ReissueController {
           .build());
     } catch (ExpiredTokenException e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(ReissueResponse.builder().message(e.getMessage()));
+          .body(ReissueResponse.builder().message(e.getMessage()).build());
     } catch (InvalidTokenException e) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN)
-          .body(ReissueResponse.builder().message(e.getMessage()));
+          .body(ReissueResponse.builder().message(e.getMessage()).build());
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(ReissueResponse.builder().message(e.getMessage()));
+          .body(ReissueResponse.builder().message(e.getMessage()).build());
     }
   }
 }
