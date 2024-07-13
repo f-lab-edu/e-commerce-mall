@@ -95,12 +95,10 @@ class ProductIntegrationTest {
   @Test
   void updateThumbImg() throws Exception {
     // given
-    Long productId = 1L;
     String oldThumbImg = "old_thumb_img_url";
     String newThumbImg = "new_thumb_img_url";
     Product product = Product.builder()
         .category(category)
-        .id(productId)
         .name("Test Product")
         .price(BigDecimal.valueOf(100))
         .thumbImg(oldThumbImg)
@@ -110,11 +108,12 @@ class ProductIntegrationTest {
         .deliveryFee(0)
         .fastDelivery(0)
         .build();
-    productRepository.save(product);
+    Product savedProduct = productRepository.save(product);
 
     // when
-    mockMvc.perform(patch("/products/{id}", productId).contentType(MediaType.APPLICATION_JSON)
-            .content(newThumbImg))
+    mockMvc.perform(
+            patch("/products/{id}", savedProduct.getId()).contentType(MediaType.APPLICATION_JSON)
+                .content(newThumbImg))
         // then
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.thumbImg").value(newThumbImg));
