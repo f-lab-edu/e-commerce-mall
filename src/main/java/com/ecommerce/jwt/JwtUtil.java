@@ -67,4 +67,17 @@ public class JwtUtil {
         .issuedAt(new Date(System.currentTimeMillis()))
         .expiration(new Date(System.currentTimeMillis() + expiredMs)).signWith(secretKey).compact();
   }
+
+  /**
+   * Creates an JWT for test
+   *
+   * @param category
+   * @param email
+   * @return
+   */
+  public String createJWTForTest(String category, String email, Long expiredMs) {
+    return Jwts.builder().claim(JWT_PAYLOAD_CATEGORY, category).claim(JWT_PAYLOAD_EMAIL, email)
+        .issuedAt(new Date(System.currentTimeMillis()))
+        .expiration(new Date(System.currentTimeMillis() + expiredMs)).signWith(secretKey).compact();
+  }
 }
