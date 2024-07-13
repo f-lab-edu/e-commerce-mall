@@ -30,7 +30,7 @@ public class OrderService {
               return OrderDetail.builder()
                   .product(product)
                   .quantity(orderDetailRequest.getQuantity())
-                  .status(orderDetailRequest.getStatus())
+                  .orderStatus(orderDetailRequest.getOrderStatus())
                   .build();
             }
         ).collect(Collectors.toList()))

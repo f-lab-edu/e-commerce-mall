@@ -12,7 +12,7 @@ import com.ecommerce.order.dto.OrderDetailRequest;
 import com.ecommerce.order.dto.OrderRequest;
 import com.ecommerce.order.entity.Order;
 import com.ecommerce.order.entity.OrderDetail;
-import com.ecommerce.order.entity.Status;
+import com.ecommerce.order.entity.OrderStatus;
 import com.ecommerce.order.repository.OrderRepository;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
@@ -48,13 +48,13 @@ class OrderServiceTest {
         .id(1L)
         .build();
     Product product = Product.builder().id(1L).build();
-    OrderDetailRequest orderDetailRequest = new OrderDetailRequest(1L, 1, Status.PENDING);
+    OrderDetailRequest orderDetailRequest = new OrderDetailRequest(1L, 1, OrderStatus.PENDING);
     OrderRequest orderRequest = new OrderRequest("테스트", "서울시 강남구", "010-1234-5678",
         List.of(orderDetailRequest));
     List<OrderDetail> orderDetails = List.of(OrderDetail.builder()
         .product(product)
         .quantity(orderDetailRequest.getQuantity())
-        .status(orderDetailRequest.getStatus())
+        .orderStatus(orderDetailRequest.getOrderStatus())
         .build());
     Order order = Order.builder()
         .id(1L)

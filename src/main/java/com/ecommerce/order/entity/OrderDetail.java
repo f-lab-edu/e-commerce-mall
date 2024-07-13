@@ -43,6 +43,6 @@ public class OrderDetail {
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  private Status status;
+  private OrderStatus orderStatus;
 
 }

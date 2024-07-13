@@ -13,7 +13,7 @@ import com.ecommerce.member.entity.Member;
 import com.ecommerce.order.dto.OrderDetailFormResponse;
 import com.ecommerce.order.dto.OrderDetailRequest;
 import com.ecommerce.order.dto.OrderRequest;
-import com.ecommerce.order.entity.Status;
+import com.ecommerce.order.entity.OrderStatus;
 import com.ecommerce.order.service.OrderService;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
@@ -60,7 +60,7 @@ class OrderControllerTest {
   @Test
   void order() throws Exception {
     // given
-    OrderDetailRequest orderDetailRequest = new OrderDetailRequest(1L, 1, Status.PENDING);
+    OrderDetailRequest orderDetailRequest = new OrderDetailRequest(1L, 1, OrderStatus.PENDING);
     OrderRequest orderRequest = new OrderRequest("테스트", "서울시 강남구", "010-1234-5678",
         List.of(orderDetailRequest));
     Member member = Member.builder()

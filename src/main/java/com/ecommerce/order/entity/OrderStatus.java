@@ -1,6 +1,6 @@
 package com.ecommerce.order.entity;
 
-public enum Status {
+public enum OrderStatus {
   PENDING,    // 주문 대기 중
   PROCESSING, // 주문 처리 중
   SHIPPED,    // 주문 배송 중

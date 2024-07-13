@@ -1,6 +1,6 @@
 package com.ecommerce.order.dto;
 
-import com.ecommerce.order.entity.Status;
+import com.ecommerce.order.entity.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,5 +10,5 @@ public class OrderDetailRequest {
 
   private Long productId;
   private int quantity;
-  private Status status;
+  private OrderStatus orderStatus;
 }
