@@ -60,12 +60,14 @@ public class SigninFilter extends UsernamePasswordAuthenticationFilter {
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
       FilterChain chain, Authentication authResult) throws IOException, ServletException {
     String email = authResult.getName();
+
     Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
     String role = roles.stream()
         .map(GrantedAuthority::getAuthority)
         .findFirst()
         .orElse("");
-    log.debug("role sb :: " + role);
+
+    log.debug("토큰에 넣을 role :: " + role);
     String accessToken = jwtUtil.createAccessToken(email, role);
     String refreshToken = jwtUtil.createRefreshToken(email, role);
 

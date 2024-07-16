@@ -2,6 +2,7 @@ package com.ecommerce.jwt;
 
 import com.ecommerce.member.dto.MemberDetails;
 import com.ecommerce.member.entity.Member;
+import com.ecommerce.member.entity.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -60,7 +61,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     String email = jwtUtil.getEmail(accessToken);
-    String role = jwtUtil.getRole(accessToken);
+    Role role = jwtUtil.getRole(accessToken);
     log.debug("role from token :: " + role);
 
     Member member = Member.builder().email(email).role(role).build();
@@ -69,6 +70,7 @@ public class JwtFilter extends OncePerRequestFilter {
     MemberDetails memberDetails = new MemberDetails(member);
     Authentication authToken = new UsernamePasswordAuthenticationToken(memberDetails, null,
         memberDetails.getAuthorities());
+    log.debug("authTOken :: " + authToken);
     SecurityContextHolder.getContext().setAuthentication(authToken);
     filterChain.doFilter(request, response);
   }

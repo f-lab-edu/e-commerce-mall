@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.ecommerce.jwt.entity.RefreshToken;
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
 import com.ecommerce.member.dto.SigninRequest;
+import com.ecommerce.member.entity.Role;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -109,11 +110,12 @@ class SigninFilterTest {
   void successfulAuthentication() throws ServletException, IOException {
     // given
     String email = "test@example.com";
+    String role = Role.BASIC.name();
     String accessToken = "access-token";
     String refreshToken = "refresh-token";
 
-    when(jwtUtil.createAccessToken(email)).thenReturn(accessToken);
-    when(jwtUtil.createRefreshToken(email)).thenReturn(refreshToken);
+    when(jwtUtil.createAccessToken(email, role)).thenReturn(accessToken);
+    when(jwtUtil.createRefreshToken(email, role)).thenReturn(refreshToken);
 
     MockHttpServletRequest request = new MockHttpServletRequest();
     MockHttpServletResponse response = new MockHttpServletResponse();

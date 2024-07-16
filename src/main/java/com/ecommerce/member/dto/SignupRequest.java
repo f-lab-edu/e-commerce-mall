@@ -1,5 +1,6 @@
 package com.ecommerce.member.dto;
 
+import com.ecommerce.member.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -30,5 +31,5 @@ public class SignupRequest {
   @NotBlank(message = "연락처는 필수입니다.")
   private String phone;
 
-  private String role;
+  private Role role;
 }

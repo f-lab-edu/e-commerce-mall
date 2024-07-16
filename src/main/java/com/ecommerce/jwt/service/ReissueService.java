@@ -6,6 +6,7 @@ import com.ecommerce.jwt.JwtUtil;
 import com.ecommerce.jwt.dto.TokenPair;
 import com.ecommerce.jwt.entity.RefreshToken;
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
+import com.ecommerce.member.entity.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class ReissueService {
     }
 
     String email = jwtUtil.getEmail(refreshToken);
-    String role = jwtUtil.getRole(refreshToken);
+    Role role = jwtUtil.getRole(refreshToken);
 
     // Check if refresh token exists in DB
     RefreshToken refreshTokenEntity = refreshTokenRepository.findByEmailAndRefreshToken(email,
@@ -43,8 +44,8 @@ public class ReissueService {
     }
 
     // Create new tokens
-    String newAccess = jwtUtil.createAccessToken(email, role);
-    String newRefresh = jwtUtil.createRefreshToken(email, role);
+    String newAccess = jwtUtil.createAccessToken(email, role.name());
+    String newRefresh = jwtUtil.createRefreshToken(email, role.name());
 
     refreshTokenEntity.update(newRefresh);
 

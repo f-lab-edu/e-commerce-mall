@@ -2,6 +2,7 @@ package com.ecommerce.member.service;
 
 import com.ecommerce.member.dto.SignupRequest;
 import com.ecommerce.member.entity.Member;
+import com.ecommerce.member.entity.Role;
 import com.ecommerce.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,7 +18,7 @@ public class MemberService {
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   public Long save(SignupRequest request) {
-    String role = "ROLE_BASIC";
+    Role role = Role.BASIC;
     if (request.getRole() != null) {
       role = request.getRole();
     }

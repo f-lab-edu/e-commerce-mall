@@ -3,6 +3,8 @@ package com.ecommerce.member.entity;
 import com.ecommerce.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,7 +36,8 @@ public class Member extends BaseTimeEntity {
   @NotNull
   private String phone;
   @NotNull
-  private String role;
+  @Enumerated(EnumType.STRING)
+  private Role role;
   private String keywords;
 
   public boolean checkPassword(String password) {

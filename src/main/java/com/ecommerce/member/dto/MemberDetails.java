@@ -18,12 +18,10 @@ public class MemberDetails implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     Collection<GrantedAuthority> authorities = new ArrayList<>();
-    String roles = member.getRole();
-    log.debug("role: " + roles);
-    for (String role : roles.split(", ")) {
-      authorities.add(new SimpleGrantedAuthority(role));
-    }
-    log.debug("authorities: " + authorities);
+    String role = member.getRole().name();
+    authorities.add(new SimpleGrantedAuthority(role));
+
+    log.debug("authorities :: " + authorities);
     return authorities;
   }
 

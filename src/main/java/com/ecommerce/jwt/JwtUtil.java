@@ -1,5 +1,6 @@
 package com.ecommerce.jwt;
 
+import com.ecommerce.member.entity.Role;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -43,9 +44,11 @@ public class JwtUtil {
         .get(JWT_PAYLOAD_EMAIL, String.class);
   }
 
-  public String getRole(String token) {
-    return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
+  public Role getRole(String token) {
+    String roleName = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
+        .getPayload()
         .get(JWT_PAYLOAD_ROLE, String.class);
+    return Role.valueOf(roleName);
   }
 
   public Boolean isExpired(String token) {
