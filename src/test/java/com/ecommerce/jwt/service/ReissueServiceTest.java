@@ -49,6 +49,7 @@ class ReissueServiceTest {
     when(jwtUtil.isExpired(validRefreshToken)).thenReturn(false);
     when(jwtUtil.isRefreshToken(validRefreshToken)).thenReturn(true);
     when(jwtUtil.getEmail(validRefreshToken)).thenReturn(email);
+    when(jwtUtil.getRole(validRefreshToken)).thenReturn(Role.BASIC);
     when(refreshTokenRepository.findByEmailAndRefreshToken(email, validRefreshToken)).thenReturn(
         refreshTokenEntity);
     when(jwtUtil.createAccessToken(email, role)).thenReturn(newAccessToken);
