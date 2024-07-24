@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,8 +21,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Builder
+@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -45,7 +46,7 @@ public class Order extends BaseTimeEntity {
   @NotNull
   private String phone;
 
+  @Builder.Default
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<OrderDetail> orderDetails;
-
+  private List<OrderDetail> orderDetails = new ArrayList<>();
 }
