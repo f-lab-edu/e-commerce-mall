@@ -78,8 +78,9 @@ public class JwtUtil {
    * @param email
    * @return
    */
-  public String createJWTForTest(String category, String email, Long expiredMs) {
+  public String createJWTForTest(String category, String email, String role, Long expiredMs) {
     return Jwts.builder().claim(JWT_PAYLOAD_CATEGORY, category).claim(JWT_PAYLOAD_EMAIL, email)
+        .claim(JWT_PAYLOAD_ROLE, role)
         .issuedAt(new Date(System.currentTimeMillis()))
         .expiration(new Date(System.currentTimeMillis() + expiredMs)).signWith(secretKey).compact();
   }
