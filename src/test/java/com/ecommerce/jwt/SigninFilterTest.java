@@ -18,6 +18,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.List;
 import javax.naming.AuthenticationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +36,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @ExtendWith(MockitoExtension.class) // Mockito 초기화
 class SigninFilterTest {
@@ -120,7 +124,9 @@ class SigninFilterTest {
     MockHttpServletRequest request = new MockHttpServletRequest();
     MockHttpServletResponse response = new MockHttpServletResponse();
     MockFilterChain chain = new MockFilterChain();
-    Authentication authResult = new UsernamePasswordAuthenticationToken(email, null);
+    Collection<? extends GrantedAuthority> roles = List.of(
+        new SimpleGrantedAuthority(Role.BASIC.name()));
+    Authentication authResult = new UsernamePasswordAuthenticationToken(email, null, roles);
 
     // when
     signinFilter.successfulAuthentication(request, response, chain, authResult);
@@ -129,7 +135,7 @@ class SigninFilterTest {
     verify(refreshTokenRepository, times(1)).save(any(RefreshToken.class));
     assertEquals(accessToken, response.getHeader("Access"));
     Cookie cookie = response.getCookie("Refresh");
-    assert cookie != null;
+    assert cookie != null; // 널이 아님을 확인
     assertEquals(refreshToken, cookie.getValue());
     assertEquals(HttpStatus.OK.value(), response.getStatus());
   }
