@@ -9,7 +9,6 @@ import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
 import com.ecommerce.utils.MemberUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -49,20 +48,20 @@ public class OrderController {
   /**
    * 주문 정보 입력 (주문 상품 정보 가져오기)
    *
-   * @param requests
+   * @param request
    * @return ResponseEntity<OrderFormResponse>
    */
   @GetMapping("/form")
   public ResponseEntity<List<OrderDetailFormResponse>> orderForm(
-      @RequestBody OrderDetailFormRequest... requests) {
+      @RequestBody OrderDetailFormRequest request) {
 
-    List<OrderDetailFormResponse> responses = Arrays.stream(requests)
+    List<OrderDetailFormResponse> responses = request.getOrderDetails().stream()
         .map(
-            orderFormRequest -> {
-              Product product = productService.findById(orderFormRequest.getProductId());
+            orderDetail -> {
+              Product product = productService.findById(orderDetail.getProductId());
               return OrderDetailFormResponse.builder()
                   .product(product)
-                  .quantity(orderFormRequest.getQuantity())
+                  .quantity(orderDetail.getQuantity())
                   .build();
             })
         .collect(Collectors.toList());

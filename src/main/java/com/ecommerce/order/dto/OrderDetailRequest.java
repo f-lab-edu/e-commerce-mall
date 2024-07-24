@@ -10,5 +10,5 @@ public class OrderDetailRequest {
 
   private Long productId;
   private int quantity;
-  private OrderStatus orderStatus;
+  private OrderStatus orderStatus = OrderStatus.PENDING;
 }
