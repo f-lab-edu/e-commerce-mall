@@ -47,7 +47,7 @@ public class OrderController {
   }
 
   /**
-   * 주문 정보 입력 전처리 (주문 상품 정보 가져오기)
+   * 주문 정보 입력 (주문 상품 정보 가져오기)
    *
    * @param requests
    * @return ResponseEntity<OrderFormResponse>

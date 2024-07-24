@@ -26,7 +26,7 @@ public class AddressbookController {
   private final MemberUtil memberUtil;
 
   /**
-   * 주문 정보 입력 전처리 (기본 배송지 가져오기)
+   * 주문 정보 입력 (기본 배송지 가져오기)
    *
    * @param request
    * @return
