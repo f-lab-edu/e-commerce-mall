@@ -1,13 +1,12 @@
 package com.ecommerce.order.controller;
 
-import com.ecommerce.member.entity.Member;
+import com.ecommerce.jwt.JwtUtil;
 import com.ecommerce.order.dto.OrderDetailFormRequest;
 import com.ecommerce.order.dto.OrderDetailFormResponse;
 import com.ecommerce.order.dto.OrderRequest;
 import com.ecommerce.order.service.OrderService;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
-import com.ecommerce.utils.MemberUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +27,7 @@ public class OrderController {
 
   private final OrderService orderService;
   private final ProductService productService;
-  private final MemberUtil memberUtil;
+  private final JwtUtil jwtUtil;
 
   /**
    * 주문 하기
@@ -40,8 +39,9 @@ public class OrderController {
   @PostMapping("")
   public ResponseEntity<Long> order(HttpServletRequest request,
       @RequestBody OrderRequest orderRequest) {
-    Member member = memberUtil.getLoginMember(request);
-    Long id = orderService.save(member, orderRequest);
+    String accessToken = request.getHeader("Access");
+    Long memberId = jwtUtil.getMemberId(accessToken);
+    Long id = orderService.save(memberId, orderRequest);
     return ResponseEntity.ok().body(id);
   }
 

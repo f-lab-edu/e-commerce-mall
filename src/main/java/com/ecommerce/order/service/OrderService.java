@@ -1,12 +1,12 @@
 package com.ecommerce.order.service;
 
-import com.ecommerce.member.entity.Member;
 import com.ecommerce.order.dto.OrderRequest;
 import com.ecommerce.order.entity.Order;
 import com.ecommerce.order.entity.OrderDetail;
 import com.ecommerce.order.repository.OrderRepository;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +20,11 @@ public class OrderService {
   private final OrderRepository orderRepository;
   private final ProductService productService;
 
-  public Long save(Member member, OrderRequest request) {
+  @Transactional
+  public Long save(Long memberId, OrderRequest request) {
 
     Order order = Order.builder()
-        .member(member)
+        .memberId(memberId)
         .name(request.getName())
         .address(request.getAddress())
         .phone(request.getPhone())

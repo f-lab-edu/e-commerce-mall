@@ -11,5 +11,5 @@ public class AddressbookRequest extends BaseTimeEntity {
   private String name;
   private String address;
   private String phone;
-  private Integer defaultValue;
+  private Integer isDefault;
 }

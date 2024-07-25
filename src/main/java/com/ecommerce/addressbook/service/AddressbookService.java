@@ -3,9 +3,9 @@ package com.ecommerce.addressbook.service;
 import com.ecommerce.addressbook.dto.AddressbookRequest;
 import com.ecommerce.addressbook.entity.Addressbook;
 import com.ecommerce.addressbook.repository.AddressbookRepository;
-import com.ecommerce.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,18 +20,32 @@ public class AddressbookService {
    * @return
    */
   public Addressbook findDefaultAddressByMemberId(Long memberId) {
-    return addressbookRepository.findByMemberIdAndDefaultValue(memberId, 1);
+    return addressbookRepository.findByMemberIdAndIsDefault(memberId, 1);
   }
 
-  public Addressbook save(Member member, AddressbookRequest addressbookRequest) {
+  @Transactional
+  public Addressbook save(Long memberId, AddressbookRequest addressbookRequest) {
+    if (addressbookRequest.getIsDefault() == 1) {
+      resetDefault(memberId);
+    }
+
     return addressbookRepository.save(Addressbook.builder()
-        .member(member)
+        .memberId(memberId)
         .name(addressbookRequest.getName())
         .address(addressbookRequest.getAddress())
         .phone(addressbookRequest.getPhone())
-        .defaultValue(addressbookRequest.getDefaultValue())
+        .isDefault(addressbookRequest.getIsDefault())
         .build()
     );
+  }
+
+  /**
+   * 기본 배송지 리셋
+   *
+   * @param memberId
+   */
+  public void resetDefault(Long memberId) {
+    addressbookRepository.resetIsDefault(memberId);
   }
 
 }

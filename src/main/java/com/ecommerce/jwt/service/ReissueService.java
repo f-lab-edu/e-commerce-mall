@@ -33,6 +33,7 @@ public class ReissueService {
     }
 
     String email = jwtUtil.getEmail(refreshToken);
+    Long memberId = jwtUtil.getMemberId(refreshToken);
 
     // Check if refresh token exists in DB
     RefreshToken refreshTokenEntity = refreshTokenRepository.findByEmailAndRefreshToken(email,
@@ -42,8 +43,8 @@ public class ReissueService {
     }
 
     // Create new tokens
-    String newAccess = jwtUtil.createAccessToken(email);
-    String newRefresh = jwtUtil.createRefreshToken(email);
+    String newAccess = jwtUtil.createAccessToken(email, memberId);
+    String newRefresh = jwtUtil.createRefreshToken(email, memberId);
 
     refreshTokenEntity.update(newRefresh);
 

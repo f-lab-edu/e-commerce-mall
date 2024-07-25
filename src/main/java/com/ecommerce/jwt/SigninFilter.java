@@ -2,6 +2,7 @@ package com.ecommerce.jwt;
 
 import com.ecommerce.jwt.entity.RefreshToken;
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
+import com.ecommerce.member.dto.MemberDetails;
 import com.ecommerce.member.dto.SigninRequest;
 import com.ecommerce.utils.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,9 +57,11 @@ public class SigninFilter extends UsernamePasswordAuthenticationFilter {
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
       FilterChain chain, Authentication authResult) throws IOException, ServletException {
     String email = authResult.getName();
+    MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
+    Long memberId = memberDetails.getMember().getId();
 
-    String accessToken = jwtUtil.createAccessToken(email);
-    String refreshToken = jwtUtil.createRefreshToken(email);
+    String accessToken = jwtUtil.createAccessToken(email, memberId);
+    String refreshToken = jwtUtil.createRefreshToken(email, memberId);
 
     RefreshToken refreshTokenEntity = RefreshToken.builder().email(email).refreshToken(refreshToken)
         .build();

@@ -3,8 +3,7 @@ package com.ecommerce.addressbook.controller;
 import com.ecommerce.addressbook.dto.AddressbookRequest;
 import com.ecommerce.addressbook.entity.Addressbook;
 import com.ecommerce.addressbook.service.AddressbookService;
-import com.ecommerce.member.entity.Member;
-import com.ecommerce.utils.MemberUtil;
+import com.ecommerce.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AddressbookController {
 
   private final AddressbookService addressbookService;
-  private final MemberUtil memberUtil;
+  private final JwtUtil jwtUtil;
 
   /**
    * 주문 정보 입력 (기본 배송지 가져오기)
@@ -33,8 +32,9 @@ public class AddressbookController {
    */
   @GetMapping("/default")
   public ResponseEntity<Addressbook> getDefaultAddress(HttpServletRequest request) {
-    Member member = memberUtil.getLoginMember(request);
-    Addressbook addressbook = addressbookService.findDefaultAddressByMemberId(member.getId());
+    String accessToken = request.getHeader("Access");
+    Long memberId = jwtUtil.getMemberId(accessToken);
+    Addressbook addressbook = addressbookService.findDefaultAddressByMemberId(memberId);
     if (addressbook == null) {
       log.debug("기본 배송지가 없는 회원");
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -53,8 +53,9 @@ public class AddressbookController {
   @PostMapping("")
   public ResponseEntity<Addressbook> save(HttpServletRequest request,
       @RequestBody AddressbookRequest addressbookRequest) {
-    Member member = memberUtil.getLoginMember(request);
-    Addressbook addressbook = addressbookService.save(member, addressbookRequest);
+    String accessToken = request.getHeader("Access");
+    Long memberId = jwtUtil.getMemberId(accessToken);
+    Addressbook addressbook = addressbookService.save(memberId, addressbookRequest);
     return ResponseEntity.ok().body(addressbook);
   }
 
