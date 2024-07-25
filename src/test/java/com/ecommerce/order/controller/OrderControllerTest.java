@@ -9,15 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ecommerce.member.entity.Member;
-import com.ecommerce.order.dto.OrderDetailFormResponse;
+import com.ecommerce.jwt.JwtUtil;
+import com.ecommerce.order.dto.OrderDetailFormRequest;
 import com.ecommerce.order.dto.OrderDetailRequest;
 import com.ecommerce.order.dto.OrderRequest;
 import com.ecommerce.order.entity.OrderStatus;
 import com.ecommerce.order.service.OrderService;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
-import com.ecommerce.utils.MemberUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +41,7 @@ class OrderControllerTest {
   private ProductService productService;
 
   @Mock
-  private MemberUtil memberUtil;
+  private JwtUtil jwtUtil;
 
   @InjectMocks
   private OrderController orderController;
@@ -63,12 +62,10 @@ class OrderControllerTest {
     OrderDetailRequest orderDetailRequest = new OrderDetailRequest(1L, 1, OrderStatus.PENDING);
     OrderRequest orderRequest = new OrderRequest("테스트", "서울시 강남구", "010-1234-5678",
         List.of(orderDetailRequest));
-    Member member = Member.builder()
-        .id(1L)
-        .build();
+    Long memberId = 1L;
 
-    when(memberUtil.getLoginMember(any())).thenReturn(member);
-    when(orderService.save(any(Member.class), any(OrderRequest.class))).thenReturn(1L);
+    when(jwtUtil.getMemberId(any())).thenReturn(memberId);
+    when(orderService.save(any(Long.class), any(OrderRequest.class))).thenReturn(1L);
 
     // when
     ResultActions resultActions = mockMvc.perform(post("/orders")
@@ -86,24 +83,16 @@ class OrderControllerTest {
   void orderForm() throws Exception {
     // given
     Product product = Product.builder().id(1L).build();
-    String requests = """
-                [{
-                    "productId":1,
-                    "quantity":2
-                }]
-        """;
-    OrderDetailFormResponse response = OrderDetailFormResponse.builder()
-        .product(product)
-        .quantity(2)
-        .build();
-    List<OrderDetailFormResponse> responses = List.of(response);
+    OrderDetailRequest orderDetailRequest = new OrderDetailRequest(1L, 2, OrderStatus.PENDING);
+    OrderDetailFormRequest orderDetailFormRequest = new OrderDetailFormRequest();
+    orderDetailFormRequest.getOrderDetails().add(orderDetailRequest);
 
     when(productService.findById(anyLong())).thenReturn(product);
 
     // when
     ResultActions resultActions = mockMvc.perform(get("/orders/form")
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .content(requests));
+        .content(objectMapper.writeValueAsString(orderDetailFormRequest)));
 
     // then
     resultActions.andExpect(status().isOk())

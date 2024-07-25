@@ -11,8 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ecommerce.addressbook.dto.AddressbookRequest;
 import com.ecommerce.addressbook.entity.Addressbook;
 import com.ecommerce.addressbook.service.AddressbookService;
-import com.ecommerce.member.entity.Member;
-import com.ecommerce.utils.MemberUtil;
+import com.ecommerce.jwt.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +32,7 @@ class AddressbookControllerTest {
   private AddressbookService addressbookService;
 
   @Mock
-  private MemberUtil memberUtil;
+  private JwtUtil jwtUtil;
 
   @InjectMocks
   private AddressbookController addressbookController;
@@ -51,17 +50,14 @@ class AddressbookControllerTest {
   @Test
   void getDefaultAddress() throws Exception {
     // given
-    Member member = Member.builder()
-        .id(1L)
-        .build();
+    Long memberId = 1L;
     Addressbook addressbook = Addressbook.builder()
         .id(1L)
-        .member(member)
+        .memberId(memberId)
         .build();
 
-    when(memberUtil.getLoginMember(any())).thenReturn(member);
-    when(addressbookService.findDefaultAddressByMemberId(member.getId())).thenReturn(
-        addressbook);
+    when(jwtUtil.getMemberId(any())).thenReturn(memberId);
+    when(addressbookService.findDefaultAddressByMemberId(memberId)).thenReturn(addressbook);
 
     // When
     ResultActions resultActions = mockMvc.perform(get("/address-book/default"));
@@ -71,23 +67,21 @@ class AddressbookControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.id").value(addressbook.getId()))
-        .andExpect(jsonPath("$.member.id").value(addressbook.getMember().getId()));
+        .andExpect(jsonPath("$.memberId").value(addressbook.getMemberId()));
   }
 
   @DisplayName("기본 배송지가 없어 요청에 실패한다.")
   @Test
   void getDefaultAddressFailure() throws Exception {
     // given
-    Member member = Member.builder()
-        .id(1L)
-        .build();
+    Long memberId = 1L;
     Addressbook addressbook = Addressbook.builder()
         .id(1L)
-        .member(member)
+        .memberId(memberId)
         .build();
 
-    when(memberUtil.getLoginMember(any())).thenReturn(member);
-    when(addressbookService.findDefaultAddressByMemberId(member.getId())).thenReturn(null);
+    when(jwtUtil.getMemberId(any())).thenReturn(memberId);
+    when(addressbookService.findDefaultAddressByMemberId(memberId)).thenReturn(null);
 
     // When
     ResultActions resultActions = mockMvc.perform(get("/address-book/default"));
@@ -102,20 +96,18 @@ class AddressbookControllerTest {
     // given
     AddressbookRequest addressbookRequest = new AddressbookRequest("테스트", "서울시 강남구",
         "010-1234-5678", 1);
-    Member member = Member.builder()
-        .id(1L)
-        .build();
+    Long memberId = 1L;
     Addressbook addressbook = Addressbook.builder()
         .id(1L)
-        .member(member)
+        .memberId(memberId)
         .name(addressbookRequest.getName())
         .address(addressbookRequest.getAddress())
         .phone(addressbookRequest.getPhone())
-        .defaultValue(addressbookRequest.getDefaultValue())
+        .isDefault(addressbookRequest.getIsDefault())
         .build();
 
-    when(memberUtil.getLoginMember(any())).thenReturn(member);
-    when(addressbookService.save(any(Member.class), any(AddressbookRequest.class)))
+    when(jwtUtil.getMemberId(any())).thenReturn(memberId);
+    when(addressbookService.save(any(Long.class), any(AddressbookRequest.class)))
         .thenReturn(addressbook);
 
     // when
@@ -126,10 +118,10 @@ class AddressbookControllerTest {
     // then
     resultActions.andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(addressbook.getId()))
-        .andExpect(jsonPath("$.member.id").value(addressbook.getMember().getId()))
+        .andExpect(jsonPath("$.memberId").value(addressbook.getMemberId()))
         .andExpect(jsonPath("$.name").value(addressbook.getName()))
         .andExpect(jsonPath("$.address").value(addressbook.getAddress()))
         .andExpect(jsonPath("$.phone").value(addressbook.getPhone()))
-        .andExpect(jsonPath("$.defaultValue").value(addressbook.getDefaultValue()));
+        .andExpect(jsonPath("$.isDefault").value(addressbook.getIsDefault()));
   }
 }

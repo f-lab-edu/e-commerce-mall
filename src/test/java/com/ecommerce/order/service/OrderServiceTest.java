@@ -7,7 +7,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ecommerce.member.entity.Member;
 import com.ecommerce.order.dto.OrderDetailRequest;
 import com.ecommerce.order.dto.OrderRequest;
 import com.ecommerce.order.entity.Order;
@@ -44,9 +43,7 @@ class OrderServiceTest {
   @Test
   void save() {
     // given
-    Member member = Member.builder()
-        .id(1L)
-        .build();
+    Long memberId = 1L;
     Product product = Product.builder().id(1L).build();
     OrderDetailRequest orderDetailRequest = new OrderDetailRequest(1L, 1, OrderStatus.PENDING);
     OrderRequest orderRequest = new OrderRequest("테스트", "서울시 강남구", "010-1234-5678",
@@ -58,7 +55,7 @@ class OrderServiceTest {
         .build());
     Order order = Order.builder()
         .id(1L)
-        .member(member)
+        .memberId(memberId)
         .name(orderRequest.getName())
         .address(orderRequest.getAddress())
         .phone(orderRequest.getPhone())
@@ -69,7 +66,7 @@ class OrderServiceTest {
     when(orderRepository.save(any(Order.class))).thenReturn(order);
 
     // when
-    Long id = orderService.save(member, orderRequest);
+    Long id = orderService.save(memberId, orderRequest);
 
     // then
     assertEquals(1L, id);
