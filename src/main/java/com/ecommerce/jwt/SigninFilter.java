@@ -2,8 +2,10 @@ package com.ecommerce.jwt;
 
 import com.ecommerce.jwt.entity.RefreshToken;
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
+import com.ecommerce.member.dto.MemberDetails;
 import com.ecommerce.member.dto.SigninRequest;
 import com.ecommerce.utils.CookieUtil;
+import com.ecommerce.utils.HeaderUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -60,23 +61,24 @@ public class SigninFilter extends UsernamePasswordAuthenticationFilter {
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
       FilterChain chain, Authentication authResult) throws IOException, ServletException {
     String email = authResult.getName();
+    MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
+    Long memberId = memberDetails.getMember().getId();
 
-    Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
-    String role = roles.stream()
+    String role = authResult.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
         .findFirst()
         .orElse("");
 
     log.debug("토큰에 넣을 role :: " + role);
-    String accessToken = jwtUtil.createAccessToken(email, role);
-    String refreshToken = jwtUtil.createRefreshToken(email, role);
+    String accessToken = jwtUtil.createAccessToken(email, memberId, role);
+    String refreshToken = jwtUtil.createRefreshToken(email, memberId, role);
 
     RefreshToken refreshTokenEntity = RefreshToken.builder().email(email).refreshToken(refreshToken)
         .build();
     refreshTokenEntity.setExpiration();
     refreshTokenRepository.save(refreshTokenEntity);
 
-    response.setHeader("Access", accessToken);
+    HeaderUtil.setAccessToken(response, accessToken);
     response.addCookie(CookieUtil.createRefreshCookie(refreshToken));
     response.setStatus(HttpStatus.OK.value());
   }

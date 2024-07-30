@@ -3,6 +3,7 @@ package com.ecommerce.member.dto;
 import com.ecommerce.member.entity.Member;
 import java.util.ArrayList;
 import java.util.Collection;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @RequiredArgsConstructor
 @Slf4j
+@Getter
 public class MemberDetails implements UserDetails {
 
   private final Member member;

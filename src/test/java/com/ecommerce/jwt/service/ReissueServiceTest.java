@@ -39,6 +39,7 @@ class ReissueServiceTest {
   void reissueSuccess() {
     // given
     String validRefreshToken = "validRefreshToken";
+    Long memberId = 1L;
     String email = "test@example.com";
     String role = Role.BASIC.name();
     String newAccessToken = "newAccessToken";
@@ -49,11 +50,12 @@ class ReissueServiceTest {
     when(jwtUtil.isExpired(validRefreshToken)).thenReturn(false);
     when(jwtUtil.isRefreshToken(validRefreshToken)).thenReturn(true);
     when(jwtUtil.getEmail(validRefreshToken)).thenReturn(email);
+    when(jwtUtil.getMemberId(validRefreshToken)).thenReturn(memberId);
     when(jwtUtil.getRole(validRefreshToken)).thenReturn(Role.BASIC);
     when(refreshTokenRepository.findByEmailAndRefreshToken(email, validRefreshToken)).thenReturn(
         refreshTokenEntity);
-    when(jwtUtil.createAccessToken(email, role)).thenReturn(newAccessToken);
-    when(jwtUtil.createRefreshToken(email, role)).thenReturn(newRefreshToken);
+    when(jwtUtil.createAccessToken(email, memberId, role)).thenReturn(newAccessToken);
+    when(jwtUtil.createRefreshToken(email, memberId, role)).thenReturn(newRefreshToken);
 
     // when
     TokenPair tokenPair = reissueService.reissue(validRefreshToken);
