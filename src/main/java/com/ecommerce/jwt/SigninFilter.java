@@ -14,16 +14,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
 
 @RequiredArgsConstructor
+@Slf4j
 public class SigninFilter extends UsernamePasswordAuthenticationFilter {
 
   private final AuthenticationManager authenticationManager;
@@ -61,8 +65,15 @@ public class SigninFilter extends UsernamePasswordAuthenticationFilter {
     MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
     Long memberId = memberDetails.getMember().getId();
 
-    String accessToken = jwtUtil.createAccessToken(email, memberId);
-    String refreshToken = jwtUtil.createRefreshToken(email, memberId);
+    Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
+    String role = roles.stream()
+        .map(GrantedAuthority::getAuthority)
+        .findFirst()
+        .orElse("");
+
+    log.debug("토큰에 넣을 role :: " + role);
+    String accessToken = jwtUtil.createAccessToken(email, memberId, role);
+    String refreshToken = jwtUtil.createRefreshToken(email, memberId, role);
 
     RefreshToken refreshTokenEntity = RefreshToken.builder().email(email).refreshToken(refreshToken)
         .build();

@@ -1,19 +1,36 @@
 package com.ecommerce.product.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ecommerce.category.entity.Category;
 import com.ecommerce.category.service.CategoryService;
+import com.ecommerce.product.document.ProductDocument;
 import com.ecommerce.product.dto.AddProductRequest;
+import com.ecommerce.product.dto.DeliveryType;
+import com.ecommerce.product.dto.SortType;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.producer.KafkaProducer;
+import com.ecommerce.product.repository.ProductDocumentRepository;
 import com.ecommerce.product.repository.ProductRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +39,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class ProductServiceTest {
 
@@ -30,16 +51,23 @@ class ProductServiceTest {
   @Mock
   private ProductRepository productRepository;
   @Mock
+  private ProductDocumentRepository productDocumentRepository;
+  @Mock
+  private ElasticsearchOperations elasticsearchOperations;
+  @Mock
   private KafkaProducer kafkaProducer;
+  @Mock
+  private EntityManager entityManager;
   @InjectMocks
   private ProductService productService;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+    ReflectionTestUtils.setField(productService, "entityManager", entityManager); // 수동 주입
   }
 
-  @DisplayName("상품 저장 성공 테스트")
+  @DisplayName("상품 저장에 성공한다.")
   @Test
   void save() {
     // given
@@ -97,7 +125,7 @@ class ProductServiceTest {
     verify(kafkaProducer, times(1)).sendProduct(any(Product.class));
   }
 
-  @DisplayName("썸네일 변경 테스트")
+  @DisplayName("썸네일 변경에 성공한다.")
   @Test
   void updateThumbImg() {
     // given
@@ -129,5 +157,121 @@ class ProductServiceTest {
     // 썸네일이 업데이트되었는지 확인
     assert updatedProduct != null;
     assert updatedProduct.getThumbImg().equals(newThumbImg);
+  }
+
+  @DisplayName("상품 검색에 성공한다.")
+  @Test
+  void search() {
+    String keyword = "keyword";
+    DeliveryType deliveryType = DeliveryType.FAST;
+    SortType sortType = SortType.HIGHPRICE;
+
+    SearchHits<ProductDocument> mockSearchHits = mock(SearchHits.class);
+    given(elasticsearchOperations.search(any(Query.class), any(Class.class))).willReturn(
+        mockSearchHits);
+
+    SearchHits<ProductDocument> result = productService.search(keyword, deliveryType, sortType);
+
+    verify(elasticsearchOperations).search(any(Query.class), any(Class.class));
+    assertThat(result).isEqualTo(mockSearchHits);
+  }
+
+  @DisplayName("초기화 설정에 성공한다.")
+  @Test
+  void init() {
+    given(productRepository.findAll()).willReturn(new ArrayList<>());
+
+    productService.init();
+
+    verify(productRepository, times(1)).findAll();
+  }
+
+  @DisplayName("카테고리별 상품 조회에 성공한다.")
+  @Test
+  void readProductsSuccess() {
+    // given
+    // Mock data
+    long categoryId = 1L;
+    Category category = Category.builder()
+        .id(categoryId)
+        .name("Test Category")
+        .build();
+    SortType sortType = SortType.HIGHPRICE; // Replace with your desired sort type
+    Product product1 = Product.builder()
+        .category(category)
+        .id(1L)
+        .name("Test Product1")
+        .price(new BigDecimal(10000))
+        .build(); // Initialize with appropriate values
+    Product product2 = Product.builder()
+        .category(category)
+        .id(2L)
+        .name("Test Product2")
+        .price(new BigDecimal(5000))
+        .build();// Initialize with appropriate values
+    List<Product> mockProductList = Arrays.asList(product1, product2);
+
+    // Mocking CriteriaBuilder, CriteriaQuery and Root
+    CriteriaBuilder cb = mock(CriteriaBuilder.class);
+    CriteriaQuery<Product> query = mock(CriteriaQuery.class);
+    Root<Product> product = mock(Root.class);
+
+    Path<Object> categoryPath = mock(Path.class);
+    Path<Object> idPath = mock(Path.class);
+    TypedQuery<Product> typedQuery = mock(TypedQuery.class);
+    Predicate predicate = mock(Predicate.class);
+
+    // Mocking entity manager behavior
+    when(entityManager.getCriteriaBuilder()).thenReturn(cb);
+    when(cb.createQuery(Product.class)).thenReturn(query);
+    when(query.from(Product.class)).thenReturn(product);
+
+    when(product.get("category")).thenReturn(categoryPath);
+    when(categoryPath.get("id")).thenReturn(idPath);
+    when(cb.equal(idPath, categoryId)).thenReturn(predicate);
+    when(query.where(predicate)).thenReturn(query);
+    when(entityManager.createQuery(query)).thenReturn(typedQuery);
+    when(typedQuery.getResultList()).thenReturn(mockProductList);
+
+    // when
+    List<Product> result = productService.readProducts(categoryId, sortType);
+
+    // then
+    assertEquals(mockProductList, result);
+  }
+
+  @DisplayName("잘못된 카테고리 id 요청으로 상품 조회에 실패한다.")
+  @Test
+  void readProductsFailure() {
+    // Mock data
+    long invalidCategoryId = 999L; // Using an invalid category ID
+    SortType sortType = SortType.HIGHPRICE;
+
+    // Mocking CriteriaBuilder, CriteriaQuery, and Root
+    CriteriaBuilder cb = mock(CriteriaBuilder.class);
+    CriteriaQuery<Product> query = mock(CriteriaQuery.class);
+    Root<Product> productRoot = mock(Root.class);
+    Path<Object> categoryPath = mock(Path.class);
+    Path<Object> idPath = mock(Path.class);
+    TypedQuery<Product> typedQuery = mock(TypedQuery.class);
+    Predicate predicate = mock(Predicate.class);
+
+    // Mocking entity manager behavior
+    when(entityManager.getCriteriaBuilder()).thenReturn(cb);
+    when(cb.createQuery(Product.class)).thenReturn(query);
+    when(query.from(Product.class)).thenReturn(productRoot);
+    when(productRoot.get("category")).thenReturn(categoryPath);
+    when(categoryPath.get("id")).thenReturn(idPath);
+    when(cb.equal(idPath, invalidCategoryId)).thenReturn(predicate);
+    when(query.where(predicate)).thenReturn(query);
+    when(entityManager.createQuery(query)).thenReturn(typedQuery);
+    when(typedQuery.getResultList()).thenReturn(
+        Arrays.asList()); // Returning empty list for invalid category ID
+
+    // Invoke the method
+    List<Product> result = productService.readProducts(invalidCategoryId, sortType);
+
+    // Assert the result
+    assertEquals(0, result.size()); // Expecting empty list for invalid category ID
   }
 }

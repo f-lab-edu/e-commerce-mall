@@ -6,6 +6,7 @@ import com.ecommerce.jwt.JwtUtil;
 import com.ecommerce.jwt.SigninFilter;
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
 import com.ecommerce.jwt.service.JwtLogoutSuccessHandler;
+import com.ecommerce.member.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -55,10 +57,15 @@ public class SecurityConfig {
     http.httpBasic(AbstractHttpConfigurer::disable);
 
     http.authorizeHttpRequests((auth) -> auth
-        // 검색, 조회, 로그인, 회원가입은 비회원, 회원 모두 허용
-        .requestMatchers("/", "/categories/**", "/products/**", "/search", "/sign-in", "/reissue")
-        .permitAll()
+        // 회원 가입 모두 허용
         .requestMatchers(HttpMethod.POST, "/members").permitAll()
+        // 상품 등록, 썸네일 변경 관리자만 허용
+        .requestMatchers(HttpMethod.POST, "/products").hasRole(Role.ADMIN.name())
+        .requestMatchers(HttpMethod.PATCH, "/products/**").hasRole(Role.ADMIN.name())
+        // 검색, 조회, 로그인, 모두 허용
+        .requestMatchers("/", "/categories/**", "/products/**", "/search/**", "/sign-in",
+            "/reissue")
+        .permitAll()
         // 그 외 모든 기능은 회원만 허용
         .anyRequest().authenticated());
 
@@ -85,6 +92,16 @@ public class SecurityConfig {
             .logoutSuccessHandler(logoutSuccessHandler));
 
     return http.build();
+  }
+
+  /**
+   * hasRole()에 자동으로 부여되는 prefix 값 제거하기
+   *
+   * @return
+   */
+  @Bean
+  GrantedAuthorityDefaults grantedAuthorityDefaults() {
+    return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
   }
 
   @Bean
