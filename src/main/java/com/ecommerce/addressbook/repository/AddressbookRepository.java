@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface AddressbookRepository extends JpaRepository<Addressbook, Long> {
 
   @Modifying
-  @Query("update Addressbook a set a.isDefault = 0 where a.memberId = :memberId")
+  @Query("update Addressbook a set a.isDefault = 0 where a.memberId = :memberId and a.isDefault = 1")
   void resetIsDefault(Long memberId);
 
   Addressbook findByMemberIdAndIsDefault(Long memberId, Integer isDefault);
