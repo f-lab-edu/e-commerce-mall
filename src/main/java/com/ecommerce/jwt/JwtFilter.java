@@ -70,7 +70,7 @@ public class JwtFilter extends OncePerRequestFilter {
     MemberDetails memberDetails = new MemberDetails(member);
     Authentication authToken = new UsernamePasswordAuthenticationToken(memberDetails, null,
         memberDetails.getAuthorities());
-    log.debug("authTOken :: " + authToken);
+    log.debug("authToken :: " + authToken);
     SecurityContextHolder.getContext().setAuthentication(authToken);
     filterChain.doFilter(request, response);
   }
