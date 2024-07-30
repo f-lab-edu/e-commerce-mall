@@ -15,8 +15,8 @@ public class TestTokenUtil {
     this.jwtUtil = jwtUtil;
   }
 
-  public String generateValidRefreshToken(String email, String role) {
-    return jwtUtil.createRefreshToken(email, role);
+  public String generateValidRefreshToken(String email, Long memberId, String role) {
+    return jwtUtil.createRefreshToken(email, memberId, role);
   }
 
   public String generateExpiredRefreshToken(String email, String role) {

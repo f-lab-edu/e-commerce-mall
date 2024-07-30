@@ -73,7 +73,7 @@ class ProductIntegrationTest {
         2500,
         0
     );
-    String accessToken = jwtUtil.createAccessToken("test@example.com", Role.ADMIN.name());
+    String accessToken = jwtUtil.createAccessToken("test@example.com", 1L, Role.ADMIN.name());
 
     // when
     mockMvc.perform(post("/products")
@@ -115,7 +115,7 @@ class ProductIntegrationTest {
         .fastDelivery(0)
         .build();
     Product savedProduct = productRepository.save(product);
-    String accessToken = jwtUtil.createAccessToken("test@example.com", Role.ADMIN.name());
+    String accessToken = jwtUtil.createAccessToken("test@example.com", 1L, Role.ADMIN.name());
 
     // when
     mockMvc.perform(patch("/products/{id}", savedProduct.getId())

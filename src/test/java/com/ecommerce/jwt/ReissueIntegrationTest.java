@@ -54,7 +54,7 @@ class ReissueIntegrationTest {
     // given
     // 리프레시 토큰 생성
     String role = Role.BASIC.name();
-    final String refreshToken = testTokenUtil.generateValidRefreshToken(email, role);
+    final String refreshToken = testTokenUtil.generateValidRefreshToken(email, 1L, role);
 
     // 생성한 리프레시토큰 DB에 저장
     RefreshToken refreshTokenEntity = RefreshToken.builder()
