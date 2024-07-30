@@ -10,7 +10,9 @@ import static org.mockito.Mockito.when;
 
 import com.ecommerce.jwt.entity.RefreshToken;
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
+import com.ecommerce.member.dto.MemberDetails;
 import com.ecommerce.member.dto.SigninRequest;
+import com.ecommerce.member.entity.Member;
 import com.ecommerce.member.entity.Role;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +20,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import javax.naming.AuthenticationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +38,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @ExtendWith(MockitoExtension.class) // Mockito 초기화
@@ -119,15 +120,27 @@ class SigninFilterTest {
     String accessToken = "access-token";
     String refreshToken = "refresh-token";
 
-    when(jwtUtil.createAccessToken(email, memberId, role)).thenReturn(accessToken);
-    when(jwtUtil.createRefreshToken(email, memberId, role)).thenReturn(refreshToken);
-
     MockHttpServletRequest request = new MockHttpServletRequest();
     MockHttpServletResponse response = new MockHttpServletResponse();
     MockFilterChain chain = new MockFilterChain();
-    Collection<? extends GrantedAuthority> roles = List.of(
-        new SimpleGrantedAuthority(Role.BASIC.name()));
-    Authentication authResult = new UsernamePasswordAuthenticationToken(email, null, roles);
+
+    Authentication authResult = mock(Authentication.class);
+
+    when(authResult.getName()).thenReturn(email);
+
+    MemberDetails memberDetails = mock(MemberDetails.class);
+    when(authResult.getPrincipal()).thenReturn(memberDetails);
+
+    Member member = mock(Member.class);
+    when(memberDetails.getMember()).thenReturn(member);
+    when(member.getId()).thenReturn(memberId);
+
+    List roles = new ArrayList<>();
+    roles.add(new SimpleGrantedAuthority(role));
+    when(authResult.getAuthorities()).thenReturn(roles);
+
+    when(jwtUtil.createAccessToken(email, memberId, role)).thenReturn(accessToken);
+    when(jwtUtil.createRefreshToken(email, memberId, role)).thenReturn(refreshToken);
 
     // when
     signinFilter.successfulAuthentication(request, response, chain, authResult);

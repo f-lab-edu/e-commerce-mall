@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -65,8 +64,7 @@ public class SigninFilter extends UsernamePasswordAuthenticationFilter {
     MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
     Long memberId = memberDetails.getMember().getId();
 
-    Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
-    String role = roles.stream()
+    String role = authResult.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
         .findFirst()
         .orElse("");
