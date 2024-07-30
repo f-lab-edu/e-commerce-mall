@@ -7,6 +7,7 @@ import com.ecommerce.order.dto.OrderRequest;
 import com.ecommerce.order.service.OrderService;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
+import com.ecommerce.utils.HeaderUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class OrderController {
   @PostMapping("")
   public ResponseEntity<Long> order(HttpServletRequest request,
       @RequestBody OrderRequest orderRequest) {
-    String accessToken = request.getHeader("Access");
+    String accessToken = HeaderUtil.getAccessToken(request);
     Long memberId = jwtUtil.getMemberId(accessToken);
     Long id = orderService.save(memberId, orderRequest);
     return ResponseEntity.ok().body(id);

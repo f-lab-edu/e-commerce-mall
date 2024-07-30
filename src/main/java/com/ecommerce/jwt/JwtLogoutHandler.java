@@ -1,6 +1,7 @@
 package com.ecommerce.jwt;
 
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
+import com.ecommerce.utils.HeaderUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class JwtLogoutHandler implements LogoutHandler {
       Authentication authentication) {
 
     System.out.println("logout 시작");
-    String accessToken = request.getHeader("Access");
+    String accessToken = HeaderUtil.getAccessToken(request);
     String email = jwtUtil.getEmail(accessToken);
     refreshTokenRepository.deleteByEmail(email);
 

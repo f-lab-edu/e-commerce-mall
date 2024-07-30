@@ -4,6 +4,7 @@ import com.ecommerce.addressbook.dto.AddressbookRequest;
 import com.ecommerce.addressbook.entity.Addressbook;
 import com.ecommerce.addressbook.service.AddressbookService;
 import com.ecommerce.jwt.JwtUtil;
+import com.ecommerce.utils.HeaderUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class AddressbookController {
    */
   @GetMapping("/default")
   public ResponseEntity<Addressbook> getDefaultAddress(HttpServletRequest request) {
-    String accessToken = request.getHeader("Access");
+    String accessToken = HeaderUtil.getAccessToken(request);
     Long memberId = jwtUtil.getMemberId(accessToken);
     Addressbook addressbook = addressbookService.findDefaultAddressByMemberId(memberId);
     if (addressbook == null) {
@@ -53,7 +54,7 @@ public class AddressbookController {
   @PostMapping("")
   public ResponseEntity<Addressbook> save(HttpServletRequest request,
       @RequestBody AddressbookRequest addressbookRequest) {
-    String accessToken = request.getHeader("Access");
+    String accessToken = HeaderUtil.getAccessToken(request);
     Long memberId = jwtUtil.getMemberId(accessToken);
     Addressbook addressbook = addressbookService.save(memberId, addressbookRequest);
     return ResponseEntity.ok().body(addressbook);

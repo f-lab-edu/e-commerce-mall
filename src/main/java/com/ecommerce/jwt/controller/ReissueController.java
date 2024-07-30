@@ -6,6 +6,7 @@ import com.ecommerce.jwt.dto.ReissueResponse;
 import com.ecommerce.jwt.dto.TokenPair;
 import com.ecommerce.jwt.service.ReissueService;
 import com.ecommerce.utils.CookieUtil;
+import com.ecommerce.utils.HeaderUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class ReissueController {
 
     try {
       TokenPair tokens = reissueService.reissue(refreshToken);
-      response.setHeader("Access", tokens.getAccessToken());
+      HeaderUtil.setAccessToken(response, tokens.getAccessToken());
       response.addCookie(CookieUtil.createRefreshCookie(tokens.getRefreshToken()));
       return ResponseEntity.ok().body(ReissueResponse.builder()
           .accessToken(tokens.getAccessToken())

@@ -2,6 +2,7 @@ package com.ecommerce.jwt;
 
 import com.ecommerce.member.dto.MemberDetails;
 import com.ecommerce.member.entity.Member;
+import com.ecommerce.utils.HeaderUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,7 +27,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     logger.debug("JwtFilter start.");
 
-    String accessToken = request.getHeader("Access");
+    String accessToken = HeaderUtil.getAccessToken(request);
 
     if (accessToken == null) {
       logger.debug("token null");

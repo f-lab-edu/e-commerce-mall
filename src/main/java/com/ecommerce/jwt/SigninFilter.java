@@ -5,6 +5,7 @@ import com.ecommerce.jwt.repository.RefreshTokenRepository;
 import com.ecommerce.member.dto.MemberDetails;
 import com.ecommerce.member.dto.SigninRequest;
 import com.ecommerce.utils.CookieUtil;
+import com.ecommerce.utils.HeaderUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -68,7 +69,7 @@ public class SigninFilter extends UsernamePasswordAuthenticationFilter {
     refreshTokenEntity.setExpiration();
     refreshTokenRepository.save(refreshTokenEntity);
 
-    response.setHeader("Access", accessToken);
+    HeaderUtil.setAccessToken(response, accessToken);
     response.addCookie(CookieUtil.createRefreshCookie(refreshToken));
     response.setStatus(HttpStatus.OK.value());
   }
