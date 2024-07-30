@@ -13,6 +13,7 @@ import com.ecommerce.jwt.JwtUtil;
 import com.ecommerce.jwt.dto.TokenPair;
 import com.ecommerce.jwt.entity.RefreshToken;
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
+import com.ecommerce.member.entity.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ class ReissueServiceTest {
     // given
     String validRefreshToken = "validRefreshToken";
     String email = "test@example.com";
+    String role = Role.BASIC.name();
     String newAccessToken = "newAccessToken";
     String newRefreshToken = "newRefreshToken";
 
@@ -47,10 +49,11 @@ class ReissueServiceTest {
     when(jwtUtil.isExpired(validRefreshToken)).thenReturn(false);
     when(jwtUtil.isRefreshToken(validRefreshToken)).thenReturn(true);
     when(jwtUtil.getEmail(validRefreshToken)).thenReturn(email);
+    when(jwtUtil.getRole(validRefreshToken)).thenReturn(Role.BASIC);
     when(refreshTokenRepository.findByEmailAndRefreshToken(email, validRefreshToken)).thenReturn(
         refreshTokenEntity);
-    when(jwtUtil.createAccessToken(email)).thenReturn(newAccessToken);
-    when(jwtUtil.createRefreshToken(email)).thenReturn(newRefreshToken);
+    when(jwtUtil.createAccessToken(email, role)).thenReturn(newAccessToken);
+    when(jwtUtil.createRefreshToken(email, role)).thenReturn(newRefreshToken);
 
     // when
     TokenPair tokenPair = reissueService.reissue(validRefreshToken);

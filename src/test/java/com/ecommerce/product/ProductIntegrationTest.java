@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ecommerce.category.entity.Category;
 import com.ecommerce.category.repository.CategoryRepository;
+import com.ecommerce.jwt.JwtUtil;
+import com.ecommerce.member.entity.Role;
 import com.ecommerce.product.dto.AddProductRequest;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.repository.ProductDocumentRepository;
@@ -40,6 +42,8 @@ class ProductIntegrationTest {
   private CategoryRepository categoryRepository;
   @Autowired
   private ProductDocumentRepository productDocumentRepository;
+  @Autowired
+  private JwtUtil jwtUtil;
 
   private Category category;
 
@@ -69,9 +73,11 @@ class ProductIntegrationTest {
         2500,
         0
     );
+    String accessToken = jwtUtil.createAccessToken("test@example.com", Role.ADMIN.name());
 
     // when
     mockMvc.perform(post("/products")
+            .header("Access", accessToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(new ObjectMapper().writeValueAsString(request)))
         // then
@@ -109,11 +115,13 @@ class ProductIntegrationTest {
         .fastDelivery(0)
         .build();
     Product savedProduct = productRepository.save(product);
+    String accessToken = jwtUtil.createAccessToken("test@example.com", Role.ADMIN.name());
 
     // when
-    mockMvc.perform(
-            patch("/products/{id}", savedProduct.getId()).contentType(MediaType.APPLICATION_JSON)
-                .content(newThumbImg))
+    mockMvc.perform(patch("/products/{id}", savedProduct.getId())
+            .header("Access", accessToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(newThumbImg))
         // then
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.thumbImg").value(newThumbImg));

@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ecommerce.jwt.entity.RefreshToken;
 import com.ecommerce.jwt.repository.RefreshTokenRepository;
 import com.ecommerce.jwt.utils.TestTokenUtil;
+import com.ecommerce.member.entity.Role;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +53,8 @@ class ReissueIntegrationTest {
   void reissueSuccess() throws Exception {
     // given
     // 리프레시 토큰 생성
-    final String refreshToken = testTokenUtil.generateValidRefreshToken(email);
+    String role = Role.BASIC.name();
+    final String refreshToken = testTokenUtil.generateValidRefreshToken(email, role);
 
     // 생성한 리프레시토큰 DB에 저장
     RefreshToken refreshTokenEntity = RefreshToken.builder()
@@ -89,7 +91,8 @@ class ReissueIntegrationTest {
   void reissueFailureExpiredToken() throws Exception {
     // given
     // 만료된 리프레시 토큰 생성
-    final String expiredRefreshToken = testTokenUtil.generateExpiredRefreshToken(email);
+    String role = Role.BASIC.name();
+    final String expiredRefreshToken = testTokenUtil.generateExpiredRefreshToken(email, role);
 
     // when & then
     mockMvc.perform(post(url)

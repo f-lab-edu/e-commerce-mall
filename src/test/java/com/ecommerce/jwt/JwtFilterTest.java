@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ecommerce.member.entity.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -54,6 +55,7 @@ class JwtFilterTest {
     when(jwtUtil.isExpired(accessToken)).thenReturn(false);
     when(jwtUtil.isAccessToken(accessToken)).thenReturn(true);
     when(jwtUtil.getEmail(accessToken)).thenReturn(email);
+    when(jwtUtil.getRole(accessToken)).thenReturn(Role.BASIC);
 
     // when
     jwtFilter.doFilterInternal(request, response, filterChain);

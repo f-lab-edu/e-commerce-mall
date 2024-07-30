@@ -1,5 +1,6 @@
 package com.ecommerce.jwt;
 
+import com.ecommerce.member.entity.Role;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -13,6 +14,7 @@ public class JwtUtil {
 
   private static final String JWT_PAYLOAD_CATEGORY = "category";
   private static final String JWT_PAYLOAD_EMAIL = "email";
+  private static final String JWT_PAYLOAD_ROLE = "role";
   private static final String ACCESS_TOKEN_CATEGORY = "access";
   private static final String REFRESH_TOKEN_CATEGORY = "refresh";
   private static final Long ACCESS_TOKEN_EXPIRATION_MS = 600000L;
@@ -42,21 +44,29 @@ public class JwtUtil {
         .get(JWT_PAYLOAD_EMAIL, String.class);
   }
 
+  public Role getRole(String token) {
+    String roleName = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
+        .getPayload()
+        .get(JWT_PAYLOAD_ROLE, String.class);
+    return Role.valueOf(roleName);
+  }
+
   public Boolean isExpired(String token) {
     return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload()
         .getExpiration().before(new Date());
   }
 
-  public String createAccessToken(String email) {
-    return createJWT(ACCESS_TOKEN_CATEGORY, email, ACCESS_TOKEN_EXPIRATION_MS);
+  public String createAccessToken(String email, String role) {
+    return createJWT(ACCESS_TOKEN_CATEGORY, email, role, ACCESS_TOKEN_EXPIRATION_MS);
   }
 
-  public String createRefreshToken(String email) {
-    return createJWT(REFRESH_TOKEN_CATEGORY, email, REFRESH_TOKEN_EXPIRATION_MS);
+  public String createRefreshToken(String email, String role) {
+    return createJWT(REFRESH_TOKEN_CATEGORY, email, role, REFRESH_TOKEN_EXPIRATION_MS);
   }
 
-  private String createJWT(String category, String email, Long expiredMs) {
+  private String createJWT(String category, String email, String role, Long expiredMs) {
     return Jwts.builder().claim(JWT_PAYLOAD_CATEGORY, category).claim(JWT_PAYLOAD_EMAIL, email)
+        .claim(JWT_PAYLOAD_ROLE, role)
         .issuedAt(new Date(System.currentTimeMillis()))
         .expiration(new Date(System.currentTimeMillis() + expiredMs)).signWith(secretKey).compact();
   }
@@ -68,8 +78,9 @@ public class JwtUtil {
    * @param email
    * @return
    */
-  public String createJWTForTest(String category, String email, Long expiredMs) {
+  public String createJWTForTest(String category, String email, String role, Long expiredMs) {
     return Jwts.builder().claim(JWT_PAYLOAD_CATEGORY, category).claim(JWT_PAYLOAD_EMAIL, email)
+        .claim(JWT_PAYLOAD_ROLE, role)
         .issuedAt(new Date(System.currentTimeMillis()))
         .expiration(new Date(System.currentTimeMillis() + expiredMs)).signWith(secretKey).compact();
   }

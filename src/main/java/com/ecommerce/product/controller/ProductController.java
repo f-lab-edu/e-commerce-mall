@@ -45,7 +45,7 @@ public class ProductController {
   }
 
   /**
-   * 썸네일 변경
+   * 썸네일 변경 (판매자만 접근 가능)
    *
    * @param id
    * @param thumbImg

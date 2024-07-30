@@ -1,19 +1,28 @@
 package com.ecommerce.member.dto;
 
 import com.ecommerce.member.entity.Member;
+import java.util.ArrayList;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @RequiredArgsConstructor
+@Slf4j
 public class MemberDetails implements UserDetails {
 
   private final Member member;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return null;
+    Collection<GrantedAuthority> authorities = new ArrayList<>();
+    String role = member.getRole().name();
+    authorities.add(new SimpleGrantedAuthority(role));
+
+    log.debug("authorities :: " + authorities);
+    return authorities;
   }
 
   @Override
