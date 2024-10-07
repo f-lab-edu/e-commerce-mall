@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.3.1'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'jacoco'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
 group = 'com.ecommerce'
@@ -36,15 +37,46 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation 'org.springframework.kafka:spring-kafka'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+    // Spring REST Docs 의존성 추가
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+    set('docsOutputDir', file("build/docs/asciidoc"))    // API 문서가 생성되는 경로
+    set('projectDocsDir', file("src/main/resources/static/docs"))    // 생성된 API 문서를 복사할 경로
+}
+
+tasks.named('bootJar') {
+    dependsOn 'asciidoctor'    // asciidoctor 수행 후 bootJar 수행
 }
 
 test {
+    doFirst { delete(snippetsDir) }    // test 수행 전 실행
     jacoco {
         destinationFile = file("$buildDir/jacoco/jacoco.exec")
     }
+    outputs.dir snippetsDir
     useJUnitPlatform()
 
     finalizedBy 'jacocoTestReport'
+}
+
+tasks.named('asciidoctor') {
+    doFirst {    // asciidoctor 수행 전 실행
+        delete(docsOutputDir)    // 기존 생성된 API 문서 삭제
+        delete(projectDocsDir)    // 기존에 복사된 API 문서 삭제
+    }
+    inputs.dir snippetsDir
+    dependsOn test
+    doLast {    // asciidoctor 수행 완료 후 실행
+        copy {    // 생성된 API 문서를 지정된 경로에 복사
+            from docsOutputDir
+            into projectDocsDir
+        }
+    }
 }
 
 jacoco {
