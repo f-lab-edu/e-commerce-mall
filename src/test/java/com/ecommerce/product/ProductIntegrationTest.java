@@ -1,6 +1,15 @@
 package com.ecommerce.product;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -22,13 +31,20 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 //TODO: Mock 객체가 아닌 실제 서버로 통합 테스트 코드 수정
+@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 class ProductIntegrationTest {
@@ -48,7 +64,13 @@ class ProductIntegrationTest {
   private Category category;
 
   @BeforeEach
-  void setUp() throws IOException {
+  void setUp(WebApplicationContext webApplicationContext,
+      RestDocumentationContextProvider restDocumentation) throws IOException {
+
+    this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+        .apply(documentationConfiguration(restDocumentation))
+        .build();
+
     productRepository.deleteAll();
 
     category = Category.builder()
@@ -81,7 +103,54 @@ class ProductIntegrationTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(new ObjectMapper().writeValueAsString(request)))
         // then
-        .andExpect(status().isOk()).andDo(print());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1))
+//        .andExpect(jsonPath("$.category").value(category))
+        .andExpect(jsonPath("$.name").value(request.getName()))
+        .andExpect(jsonPath("$.price").value(request.getPrice()))
+        .andExpect(jsonPath("$.thumbImg").value(request.getThumbImg()))
+        .andExpect(jsonPath("$.detailImg").value(request.getDetailImg()))
+        .andExpect(jsonPath("$.brand").value(request.getBrand()))
+        .andExpect(jsonPath("$.stock").value(request.getStock()))
+        .andExpect(jsonPath("$.deliveryFee").value(request.getDeliveryFee()))
+        .andExpect(jsonPath("$.fastDelivery").value(request.getFastDelivery()))
+        // REST Docs
+        .andDo(document("add-product",  // 문서화할 API의 이름
+            preprocessRequest(
+                prettyPrint(),
+                modifyUris()
+                    .scheme("http")
+                    .host("localhost")
+                    .port(8080)
+            ),
+            preprocessResponse(prettyPrint()),
+            requestFields(               // 요청 필드 설명
+                fieldWithPath("categoryId").description("상품의 카테고리 ID"),
+                fieldWithPath("name").description("상품의 이름"),
+                fieldWithPath("price").description("상품의 가격"),
+                fieldWithPath("thumbImg").description("상품 썸네일 이미지"),
+                fieldWithPath("detailImg").description("상품 상세 이미지"),
+                fieldWithPath("brand").description("상품의 브랜드"),
+                fieldWithPath("stock").description("상품의 재고 수량"),
+                fieldWithPath("deliveryFee").description("배송비"),
+                fieldWithPath("fastDelivery").description("신속 배송 여부")
+            ),
+            responseFields(
+                fieldWithPath("id").description("상품 ID"),
+                fieldWithPath("name").description("상품의 이름"),
+                fieldWithPath("price").description("상품의 가격"),
+                fieldWithPath("thumbImg").description("상품 썸네일 이미지"),
+                fieldWithPath("detailImg").description("상품 상세 이미지"),
+                fieldWithPath("brand").description("상품의 브랜드"),
+                fieldWithPath("stock").description("상품의 재고 수량"),
+                fieldWithPath("deliveryFee").description("배송비"),
+                fieldWithPath("fastDelivery").description("신속 배송 여부"),
+                fieldWithPath("createdAt").description("등록 일자"),
+                fieldWithPath("updatedAt").description("최신 업데이트 일자"),
+                fieldWithPath("score").description("인기순 점수").type(JsonFieldType.NUMBER).optional()
+            )
+        ))
+        .andDo(print()); // 로그 출력
 
     // DB
     List<Product> products = productRepository.findAll();
