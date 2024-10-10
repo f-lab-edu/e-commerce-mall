@@ -1,0 +1,39 @@
+:snippets: build/generated-snippets
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+[[common]]
+== API 명세서
+
+=== 공통 정보
+
+|===
+| 환경 | 로컬
+| 개발서버 | localhost:8080
+| 운영서버 | -
+|===
+
+[[user]]
+=== 판매자용 API
+
+[[book]]
+==== 상품 등록
+
+===== Request Body
+
+include::{snippets}/add-product/request-fields.adoc[]
+
+====== Request Example
+
+include::{snippets}/add-product/http-request.adoc[]
+
+===== Response Body
+
+include::{snippets}/add-product/response-fields.adoc[]
+====== Response Example
+
+include::{snippets}/add-product/http-response.adoc[]
+&nbsp;
