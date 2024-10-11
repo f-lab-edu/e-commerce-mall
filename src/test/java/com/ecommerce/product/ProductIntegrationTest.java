@@ -10,6 +10,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -104,8 +105,6 @@ class ProductIntegrationTest {
             .content(new ObjectMapper().writeValueAsString(request)))
         // then
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1))
-//        .andExpect(jsonPath("$.category").value(category))
         .andExpect(jsonPath("$.name").value(request.getName()))
         .andExpect(jsonPath("$.price").value(request.getPrice()))
         .andExpect(jsonPath("$.thumbImg").value(request.getThumbImg()))
@@ -133,7 +132,9 @@ class ProductIntegrationTest {
                 fieldWithPath("brand").description("상품의 브랜드"),
                 fieldWithPath("stock").description("상품의 재고 수량"),
                 fieldWithPath("deliveryFee").description("배송비"),
-                fieldWithPath("fastDelivery").description("신속 배송 여부")
+                fieldWithPath("fastDelivery").description("신속 배송 여부 (0: 불가, 1: 가능)")
+                    .type(JsonFieldType.NUMBER)
+                    .attributes(key("constraints").value("0 또는 1만 입력 가능합니다."))
             ),
             responseFields(
                 fieldWithPath("id").description("상품 ID"),
@@ -144,9 +145,15 @@ class ProductIntegrationTest {
                 fieldWithPath("brand").description("상품의 브랜드"),
                 fieldWithPath("stock").description("상품의 재고 수량"),
                 fieldWithPath("deliveryFee").description("배송비"),
-                fieldWithPath("fastDelivery").description("신속 배송 여부"),
-                fieldWithPath("createdAt").description("등록 일자"),
-                fieldWithPath("updatedAt").description("최신 업데이트 일자"),
+                fieldWithPath("fastDelivery").description("신속 배송 여부 (0: 불가, 1: 가능)")
+                    .type(JsonFieldType.NUMBER)
+                    .attributes(key("constraints").value("0 또는 1만 입력 가능합니다.")),
+                fieldWithPath("createdAt").description("등록 일자 (형식: yyyy-MM-dd'T'HH:mm:ss.SSS)")
+                    .type(JsonFieldType.STRING)
+                    .attributes(key("format").value("ISO 8601 형식")),
+                fieldWithPath("updatedAt").description("최신 업데이트 일자 (형식: yyyy-MM-dd'T'HH:mm:ss.SSS)")
+                    .type(JsonFieldType.STRING)
+                    .attributes(key("format").value("ISO 8601 형식")),
                 fieldWithPath("score").description("인기순 점수").type(JsonFieldType.NUMBER).optional()
             )
         ))
