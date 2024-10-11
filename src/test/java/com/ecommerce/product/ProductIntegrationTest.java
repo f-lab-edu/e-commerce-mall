@@ -1,12 +1,6 @@
 package com.ecommerce.product;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -19,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ecommerce.category.entity.Category;
 import com.ecommerce.category.repository.CategoryRepository;
+import com.ecommerce.common.AbstractRestDocsTests;
 import com.ecommerce.jwt.JwtUtil;
 import com.ecommerce.member.entity.Role;
 import com.ecommerce.product.dto.AddProductRequest;
@@ -26,32 +21,21 @@ import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.repository.ProductDocumentRepository;
 import com.ecommerce.product.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 //TODO: Mock 객체가 아닌 실제 서버로 통합 테스트 코드 수정
-@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-class ProductIntegrationTest {
-
-  @Autowired
-  private MockMvc mockMvc;
+class ProductIntegrationTest extends AbstractRestDocsTests {
 
   @Autowired
   private ProductRepository productRepository;
@@ -65,12 +49,7 @@ class ProductIntegrationTest {
   private Category category;
 
   @BeforeEach
-  void setUp(WebApplicationContext webApplicationContext,
-      RestDocumentationContextProvider restDocumentation) throws IOException {
-
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-        .apply(documentationConfiguration(restDocumentation))
-        .build();
+  void setUp() {
 
     productRepository.deleteAll();
 
@@ -114,15 +93,7 @@ class ProductIntegrationTest {
         .andExpect(jsonPath("$.deliveryFee").value(request.getDeliveryFee()))
         .andExpect(jsonPath("$.fastDelivery").value(request.getFastDelivery()))
         // REST Docs
-        .andDo(document("add-product",  // 문서화할 API의 이름
-            preprocessRequest(
-                prettyPrint(),
-                modifyUris()
-                    .scheme("http")
-                    .host("localhost")
-                    .port(8080)
-            ),
-            preprocessResponse(prettyPrint()),
+        .andDo(restDocs.document(
             requestFields(               // 요청 필드 설명
                 fieldWithPath("categoryId").description("상품의 카테고리 ID"),
                 fieldWithPath("name").description("상품의 이름"),
