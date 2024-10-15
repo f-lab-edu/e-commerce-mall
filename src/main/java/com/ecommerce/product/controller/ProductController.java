@@ -44,6 +44,8 @@ public class ProductController {
     return ResponseEntity.ok().body(product);
   }
 
+  // TODO: 썸네일 뿐만 아니라 변경 가능한 모든 정보 변경하는 기능으로 개선하기
+
   /**
    * 썸네일 변경 (판매자만 접근 가능)
    *
