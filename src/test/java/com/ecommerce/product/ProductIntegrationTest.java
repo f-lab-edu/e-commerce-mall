@@ -1,11 +1,13 @@
 package com.ecommerce.product;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -167,10 +169,39 @@ class ProductIntegrationTest extends AbstractRestDocsTests {
     // when
     mockMvc.perform(patch("/products/{id}", savedProduct.getId())
             .header("Access", accessToken)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.TEXT_PLAIN_VALUE)
             .content(newThumbImg))
         // then
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.thumbImg").value(newThumbImg));
+        .andExpect(jsonPath("$.thumbImg").value(newThumbImg))
+        .andDo(restDocs.document(
+            pathParameters(
+                parameterWithName("id").description("상품 ID")
+            ),
+//            requestFields(
+//                fieldWithPath("thumbImg").description("변경 될 상품 썸네일 이미지")
+//            ),
+            responseFields(
+                fieldWithPath("id").description("상품 ID"),
+                fieldWithPath("name").description("상품의 이름"),
+                fieldWithPath("price").description("상품의 가격"),
+                fieldWithPath("thumbImg").description("변경된 상품 썸네일 이미지"),
+                fieldWithPath("detailImg").description("상품 상세 이미지"),
+                fieldWithPath("brand").description("상품의 브랜드"),
+                fieldWithPath("stock").description("상품의 재고 수량"),
+                fieldWithPath("deliveryFee").description("배송비"),
+                fieldWithPath("fastDelivery").description("신속 배송 여부 (0: 불가, 1: 가능)")
+                    .type(JsonFieldType.NUMBER)
+                    .attributes(key("constraints").value("0 또는 1만 입력 가능합니다.")),
+                fieldWithPath("createdAt").description("등록 일자 (형식: yyyy-MM-dd'T'HH:mm:ss.SSS)")
+                    .type(JsonFieldType.STRING)
+                    .attributes(key("format").value("ISO 8601 형식")),
+                fieldWithPath("updatedAt").description("최신 업데이트 일자 (형식: yyyy-MM-dd'T'HH:mm:ss.SSS)")
+                    .type(JsonFieldType.STRING)
+                    .attributes(key("format").value("ISO 8601 형식")),
+                fieldWithPath("score").description("인기순 점수").type(JsonFieldType.NUMBER).optional()
+            )
+        ))
+        .andDo(print());
   }
 }
