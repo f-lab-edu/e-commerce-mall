@@ -29,14 +29,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 //TODO: Mock 객체가 아닌 실제 서버로 통합 테스트 코드 수정
-@SpringBootTest
-@AutoConfigureMockMvc
 class ProductIntegrationTest extends AbstractRestDocsTests {
 
   @Autowired
