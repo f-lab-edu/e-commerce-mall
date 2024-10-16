@@ -6,6 +6,7 @@ import com.ecommerce.product.dto.DeliveryType;
 import com.ecommerce.product.dto.ProductsResponse;
 import com.ecommerce.product.dto.ProductsSearchResponse;
 import com.ecommerce.product.dto.SortType;
+import com.ecommerce.product.dto.UpdateProductRequest;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
 import java.util.HashMap;
@@ -50,12 +51,13 @@ public class ProductController {
    * 썸네일 변경 (판매자만 접근 가능)
    *
    * @param id
-   * @param thumbImg
+   * @param request
    * @return
    */
   @PatchMapping("/{id}")
   public ResponseEntity<Product> updateThumbImg(@PathVariable Long id,
-      @RequestBody String thumbImg) {
+      @RequestBody UpdateProductRequest request) {
+    String thumbImg = request.getThumbImg();
     Product product = productService.updateThumbImg(id, thumbImg);
     return ResponseEntity.ok().body(product);
   }

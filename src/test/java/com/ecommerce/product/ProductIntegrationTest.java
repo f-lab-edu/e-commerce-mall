@@ -19,6 +19,7 @@ import com.ecommerce.common.AbstractRestDocsTests;
 import com.ecommerce.jwt.JwtUtil;
 import com.ecommerce.member.entity.Role;
 import com.ecommerce.product.dto.AddProductRequest;
+import com.ecommerce.product.dto.UpdateProductRequest;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.repository.ProductDocumentRepository;
 import com.ecommerce.product.repository.ProductRepository;
@@ -159,14 +160,15 @@ class ProductIntegrationTest extends AbstractRestDocsTests {
         .deliveryFee(0)
         .fastDelivery(0)
         .build();
+    UpdateProductRequest request = new UpdateProductRequest(newThumbImg);
     Product savedProduct = productRepository.save(product);
     String accessToken = jwtUtil.createAccessToken("test@example.com", 1L, Role.ADMIN.name());
 
     // when
     mockMvc.perform(patch("/products/{id}", savedProduct.getId())
             .header("Access", accessToken)
-            .contentType(MediaType.TEXT_PLAIN_VALUE)
-            .content(newThumbImg))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(request)))
         // then
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.thumbImg").value(newThumbImg))
@@ -174,9 +176,9 @@ class ProductIntegrationTest extends AbstractRestDocsTests {
             pathParameters(
                 parameterWithName("id").description("상품 ID")
             ),
-//            requestFields(
-//                fieldWithPath("thumbImg").description("변경 될 상품 썸네일 이미지")
-//            ),
+            requestFields(
+                fieldWithPath("thumbImg").description("변경 될 상품 썸네일 이미지")
+            ),
             responseFields(
                 fieldWithPath("id").description("상품 ID"),
                 fieldWithPath("name").description("상품의 이름"),
