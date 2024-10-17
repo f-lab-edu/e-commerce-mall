@@ -1,5 +1,6 @@
 package com.ecommerce.member.controller;
 
+import com.ecommerce.common.ResponseMessage;
 import com.ecommerce.member.dto.SignupRequest;
 import com.ecommerce.member.service.MemberService;
 import jakarta.validation.Valid;
@@ -36,7 +37,7 @@ public class MemberController {
 
     try {
       Long id = memberService.save(request);
-      return ResponseEntity.ok(id);
+      return ResponseEntity.ok(ResponseMessage.builder().data(id).build());
     } catch (Exception e) {
       // 서비스에서 예외 발생 시 처리
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

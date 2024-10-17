@@ -1,10 +1,15 @@
 package com.ecommerce.member;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ecommerce.common.AbstractRestDocsTests;
 import com.ecommerce.member.dto.SignupRequest;
 import com.ecommerce.member.entity.Member;
 import com.ecommerce.member.repository.MemberRepository;
@@ -14,24 +19,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 //TODO: Mock 객체가 아닌 실제 서버로 통합 테스트 코드 수정
-@SpringBootTest
-@AutoConfigureMockMvc
-class MemberIntegrationTest {
+class MemberIntegrationTest extends AbstractRestDocsTests {
 
-  @Autowired
-  protected MockMvc mockMvc;
-  @Autowired
-  private WebApplicationContext context;
   @Autowired
   protected ObjectMapper objectMapper;
 
@@ -40,10 +34,9 @@ class MemberIntegrationTest {
   @Autowired
   BCryptPasswordEncoder bCryptPasswordEncoder;
 
-  @BeforeEach // 각 테스트 케이스 실행 전 실행
-  public void mockMvcSetUp() {
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build(); // MockMvc 설정
-    memberRepository.deleteAll(); // 데이터 초기화
+  @BeforeEach
+  void setUp() {
+    memberRepository.deleteAll();
   }
 
   @DisplayName("회원가입에 성공한다.")
@@ -59,14 +52,28 @@ class MemberIntegrationTest {
         .build();
 
     // when
-    final ResultActions result = mockMvc.perform(post(url)
+    final ResultActions action = mockMvc.perform(post(url)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)));
 
     // then
-    result.andExpect(status().isOk())
+    action.andExpect(status().isOk())
+        .andExpect(jsonPath("$.data").value(1L))
+        .andDo(restDocs.document(
+            requestFields(
+                fieldWithPath("email").description("회원 이메일"),
+                fieldWithPath("password").description("회원 비밀번호"),
+                fieldWithPath("name").description("회원 이름"),
+                fieldWithPath("phone").description("회원 연락처"),
+                fieldWithPath("role").description("회원 권한 - [BASIC, ADMIN]").optional()
+            ),
+            relaxedResponseFields(
+                fieldWithPath("data").description("회원 고유 ID")
+            )
+        ))
         .andDo(print());
 
+    // check DB
     List<Member> members = memberRepository.findAll();
 
     assertThat(members.size()).isEqualTo(1);
