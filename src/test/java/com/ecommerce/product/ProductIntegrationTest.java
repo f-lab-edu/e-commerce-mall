@@ -161,6 +161,17 @@ class ProductIntegrationTest extends AbstractRestDocsTests {
         .fastDelivery(0)
         .build();
     UpdateProductRequest request = new UpdateProductRequest(newThumbImg);
+//    UpdateProductRequest request = UpdateProductRequest.builder()
+////        .categoryId(product.getCategory().getId())
+////        .name(product.getName())
+////        .price(product.getPrice())
+//        .thumbImg(newThumbImg)
+//        .detailImg(product.getDetailImg())
+////        .brand(product.getBrand())
+////        .stock(product.getStock())
+////        .deliveryFee(product.getDeliveryFee())
+////        .fastDelivery(product.getFastDelivery())
+//        .build();
     Product savedProduct = productRepository.save(product);
     String accessToken = jwtUtil.createAccessToken("test@example.com", 1L, Role.ADMIN.name());
 
@@ -177,7 +188,8 @@ class ProductIntegrationTest extends AbstractRestDocsTests {
                 parameterWithName("id").description("상품 ID")
             ),
             requestFields(
-                fieldWithPath("thumbImg").description("변경 될 상품 썸네일 이미지")
+                fieldWithPath("thumbImg").description("변경 될 상품 썸네일 이미지"),
+                fieldWithPath("detailImg").description("변경 될 상품 상세 이미지")
             ),
             responseFields(
                 fieldWithPath("id").description("상품 ID"),
