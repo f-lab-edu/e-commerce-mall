@@ -12,7 +12,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 
 @TestConfiguration
-public class RestDocsConfigration {
+public class RestDocsConfiguration {
 
   @Value("${server.scheme}")
   private String scheme;
