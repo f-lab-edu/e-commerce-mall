@@ -53,8 +53,7 @@ class CategoryIntegrationTest extends AbstractRestDocsTests {
     categoryRepository.saveAll(categories);
 
     // when
-    ResultActions resultActions = mockMvc.perform(get("/categories")
-        .contentType(MediaType.APPLICATION_JSON));
+    ResultActions resultActions = mockMvc.perform(get("/categories"));
 
     // then
     resultActions
