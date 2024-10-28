@@ -6,34 +6,182 @@
 :sectlinks:
 
 [[common]]
-== API 명세서
+= API 명세서
 
-=== 공통 정보
+== 공통 정보
 
 |===
-| 환경 | 로컬
-| 개발서버 | localhost:8080
+| 환경 | Host
+| 개발서버 | localhost:8080 (로컬)
 | 운영서버 | -
 |===
 
-[[user]]
-=== 판매자용 API
+[[Public]]
+== 일반 API
 
-[[book]]
-==== 상품 등록
+[[Category]]
+=== 카테고리 목록 조회
 
-===== Request Body
+==== Request Example
+
+include::{snippets}/read-categories-success/http-request.adoc[]
+
+==== Response Body
+
+include::{snippets}/read-categories-success/response-fields.adoc[]
+
+==== Response Example
+
+include::{snippets}/read-categories-success/http-response.adoc[]
+&nbsp;
+
+[[User]]
+== 사용자용 API
+
+[[Member]]
+=== 회원 가입
+
+==== Request Body
+
+include::{snippets}/signup/request-fields.adoc[]
+
+==== Request Example
+
+include::{snippets}/signup/http-request.adoc[]
+
+==== Response Body
+
+include::{snippets}/signup/response-fields.adoc[]
+
+==== Response Example
+
+===== 1. Success
+
+include::{snippets}/signup/http-response.adoc[]
+
+===== 2. Duplicate
+
+include::{snippets}/sign-up-with-duplicate-email/http-response.adoc[]
+&nbsp;
+
+[[Order]]
+=== 주문할 상품 정보 전송
+
+==== Request Body
+
+include::{snippets}/order-form/request-fields.adoc[]
+
+==== Request Example
+
+include::{snippets}/order-form/http-request.adoc[]
+
+==== Response Body
+
+include::{snippets}/order-form/response-fields.adoc[]
+
+==== Response Example
+
+include::{snippets}/order-form/http-response.adoc[]
+&nbsp;
+
+=== 주문 하기
+
+==== Request Body
+
+include::{snippets}/order/request-fields.adoc[]
+
+==== Request Example
+
+include::{snippets}/order/http-request.adoc[]
+
+==== Response Body
+
+include::{snippets}/order/response-body.adoc[]
+
+==== Response Example
+
+include::{snippets}/order/http-response.adoc[]
+&nbsp;
+
+[[Addressbook]]
+=== 주소지 추가
+
+==== Request Body
+
+include::{snippets}/save/request-fields.adoc[]
+
+==== Request Example
+
+include::{snippets}/save/http-request.adoc[]
+
+==== Response Body
+
+include::{snippets}/save/response-fields.adoc[]
+
+==== Response Example
+
+include::{snippets}/save/http-response.adoc[]
+&nbsp;
+
+=== 기본 주소지 조회
+
+==== Request Example
+
+include::{snippets}/get-default-address/http-request.adoc[]
+
+==== Response Body
+
+include::{snippets}/get-default-address/response-fields.adoc[]
+
+==== Response Example
+
+===== 1. existent
+
+include::{snippets}/get-default-address/http-response.adoc[]
+
+===== 2. non-existent
+
+include::{snippets}/get-default-address-failure/http-response.adoc[]
+&nbsp;
+
+[[Admin]]
+== 판매자용 API
+
+[[Product]]
+=== 상품 등록
+
+==== Request Body
 
 include::{snippets}/add-product/request-fields.adoc[]
 
-====== Request Example
+==== Request Example
 
 include::{snippets}/add-product/http-request.adoc[]
 
-===== Response Body
+==== Response Body
 
 include::{snippets}/add-product/response-fields.adoc[]
-====== Response Example
+
+==== Response Example
 
 include::{snippets}/add-product/http-response.adoc[]
+&nbsp;
+
+=== 썸네일 변경
+
+==== Request Body
+
+include::{snippets}/update-thumb-img/request-fields.adoc[]
+
+==== Request Example
+
+include::{snippets}/update-thumb-img/http-request.adoc[]
+
+==== Response Body
+
+include::{snippets}/update-thumb-img/response-fields.adoc[]
+
+==== Response Example
+
+include::{snippets}/update-thumb-img/http-response.adoc[]
 &nbsp;
