@@ -119,7 +119,26 @@ public class OrderIntegrationTest extends AbstractRestDocsTests {
             .content(new ObjectMapper().writeValueAsString(orderRequest)))
 
         // then
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data").value(1L))
+
+        // REST Docs
+        .andDo(restDocs.document(
+            requestFields(
+                fieldWithPath("name").description("받는 분 성함"),
+                fieldWithPath("address").description("배송지"),
+                fieldWithPath("phone").description("연락처"),
+                fieldWithPath("orderDetailRequests[]").description("주문 상품 목록"),
+                fieldWithPath("orderDetailRequests[].productId").description("상품 ID"),
+                fieldWithPath("orderDetailRequests[].quantity").description("주문 수량"),
+                fieldWithPath("orderDetailRequests[].orderStatus").description("주문 상태")
+            ),
+            responseFields(
+                fieldWithPath("status").description("응답 상태 메시지"),
+                fieldWithPath("message").description("응답 메시지"),
+                fieldWithPath("data").description("주문 고유 ID")
+            )
+        )).andDo(print());
   }
 
   @DisplayName("주문 정보 입력 전, 주문할 상품 정보를 가져온다.")
