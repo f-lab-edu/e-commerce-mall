@@ -2,34 +2,31 @@ package com.ecommerce.category;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ecommerce.category.entity.Category;
 import com.ecommerce.category.repository.CategoryRepository;
+import com.ecommerce.common.AbstractRestDocsTests;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 //TODO: Mock 객체가 아닌 실제 서버로 통합 테스트 코드 수정
-@SpringBootTest
-@AutoConfigureMockMvc
-class CategoryIntegrationTest {
+class CategoryIntegrationTest extends AbstractRestDocsTests {
 
   @Autowired
   CategoryRepository categoryRepository;
-  @Autowired
-  MockMvc mockMvc;
 
   @BeforeEach
   void setUp() {
@@ -56,8 +53,7 @@ class CategoryIntegrationTest {
     categoryRepository.saveAll(categories);
 
     // when
-    ResultActions resultActions = mockMvc.perform(get("/categories")
-        .contentType(MediaType.APPLICATION_JSON));
+    ResultActions resultActions = mockMvc.perform(get("/categories"));
 
     // then
     resultActions
@@ -69,6 +65,17 @@ class CategoryIntegrationTest {
         .andExpect(jsonPath("$[1].id", is(2)))
         .andExpect(jsonPath("$[1].name", is("Test Category2")))
         .andExpect(jsonPath("$[2].id", is(3)))
-        .andExpect(jsonPath("$[2].name", is("Test Category3")));
+        .andExpect(jsonPath("$[2].name", is("Test Category3")))
+
+        // rest Docs
+        .andDo(restDocs.document(
+            responseFields(
+                fieldWithPath("[].id").description("카테고리 ID"),
+                fieldWithPath("[].name").description("카테고리 명"),
+                fieldWithPath("[].child").description("하위 카테고리들"),
+                fieldWithPath("[].sortKey").description("카테고리 정렬 우선순위 값")
+            )
+        ))
+        .andDo(print());
   }
 }

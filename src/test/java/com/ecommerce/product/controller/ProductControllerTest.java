@@ -16,6 +16,7 @@ import com.ecommerce.product.document.ProductDocument;
 import com.ecommerce.product.dto.AddProductRequest;
 import com.ecommerce.product.dto.DeliveryType;
 import com.ecommerce.product.dto.SortType;
+import com.ecommerce.product.dto.UpdateProductRequest;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -95,14 +96,15 @@ class ProductControllerTest {
   @DisplayName("썸네일 변경에 성공한다.")
   @Test
   void updateThumbImg() throws Exception {
-    String thumbImg = "newThumbImage.jpg";
+    String thumbImg = "thumbImage.jpg";
     Product product = Product.builder().id(1L).thumbImg(thumbImg).build();
+    UpdateProductRequest request = new UpdateProductRequest(thumbImg);
 
     given(productService.updateThumbImg(anyLong(), anyString())).willReturn(product);
 
     mockMvc.perform(patch("/products/1")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(thumbImg)))
+            .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1L))
         .andExpect(jsonPath("$.thumbImg").value(thumbImg));

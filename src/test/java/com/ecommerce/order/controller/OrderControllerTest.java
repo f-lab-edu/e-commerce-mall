@@ -75,7 +75,7 @@ class OrderControllerTest {
     // then
     resultActions.andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(content().string("1"));
+        .andExpect(jsonPath("$.data").value(1L));
   }
 
   @DisplayName("주문 상품 정보 요청에 성공한다.")
