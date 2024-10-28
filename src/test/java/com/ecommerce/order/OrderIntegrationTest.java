@@ -28,6 +28,7 @@ import com.ecommerce.product.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -99,6 +100,14 @@ public class OrderIntegrationTest extends AbstractRestDocsTests {
         .fastDelivery(0)
         .build();
     productRepository.save(product);
+  }
+
+  @AfterEach
+  void tearDown() {
+    orderRepository.deleteAll();
+    addressbookRepository.deleteAll();
+    memberRepository.deleteAll();
+    productRepository.deleteAll();
   }
 
   @DisplayName("주문 처리에 성공 한다")
