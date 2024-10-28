@@ -1,5 +1,6 @@
 package com.ecommerce.order.controller;
 
+import com.ecommerce.common.ResponseMessage;
 import com.ecommerce.jwt.JwtUtil;
 import com.ecommerce.order.dto.OrderDetailFormRequest;
 import com.ecommerce.order.dto.OrderDetailFormResponse;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,12 +40,14 @@ public class OrderController {
    * @return
    */
   @PostMapping("")
-  public ResponseEntity<Long> order(HttpServletRequest request,
+  public ResponseEntity<ResponseMessage> order(HttpServletRequest request,
       @RequestBody OrderRequest orderRequest) {
     String accessToken = HeaderUtil.getAccessToken(request);
     Long memberId = jwtUtil.getMemberId(accessToken);
     Long id = orderService.save(memberId, orderRequest);
-    return ResponseEntity.ok().body(id);
+    return ResponseEntity.ok()
+        .body(ResponseMessage.builder().status(HttpStatus.OK).message("주문 완료").data(id)
+            .build());
   }
 
   /**
