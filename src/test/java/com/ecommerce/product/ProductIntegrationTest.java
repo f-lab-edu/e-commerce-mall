@@ -26,6 +26,7 @@ import com.ecommerce.product.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,11 @@ class ProductIntegrationTest extends AbstractRestDocsTests {
         .name("Test Category")
         .build();
     categoryRepository.save(category);
+  }
+
+  @AfterEach
+  void tearDown() {
+    productRepository.deleteAll();
   }
 
   @DisplayName("상품 등록에 성공한다.")
